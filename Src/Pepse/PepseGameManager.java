@@ -50,7 +50,7 @@ public class PepseGameManager extends GameManager{
         //terrain initialization
         Random random = new Random();
         Terrain terrain = new Terrain(windowDimensions, random.nextInt());
-        List<Block> terrainList = terrain.createInRange(0,(int) windowDimensions.x());
+        List<Block> terrainList = terrain.createInRange(0, (int) windowDimensions.x());
         for(Block block: terrainList){
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
         }

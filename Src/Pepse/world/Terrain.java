@@ -14,15 +14,14 @@ import java.util.List;
 public class Terrain {
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final String GROUND_BLOCK_TAG = "ground block";
-    private static final float DEFAULT_HEIGHT_AT_X0 = 2/3;
+    private static final float DEFAULT_PART_OF_SCREEN_TO_FILL = ((float)2)/3;
     private final float groundHeightAtX0;
     private final Vector2 windowDimensions;
-
 
     //    private int groundHeightAtX0;
     public Terrain(Vector2 windowDimensions, int seed) {
         this.windowDimensions = windowDimensions;
-        groundHeightAtX0 = ((float) DEFAULT_HEIGHT_AT_X0) * windowDimensions.y();
+        groundHeightAtX0 = (DEFAULT_PART_OF_SCREEN_TO_FILL * windowDimensions.y());
     }
 
     //basic method to define ground height for a given x
