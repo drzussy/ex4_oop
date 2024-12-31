@@ -13,6 +13,7 @@ import java.util.List;
  * this class does not extend gameObject buy only creates block (which are gameObjects)
  */
 public class Terrain {
+    public static final int DEFAULT_DEPTH = 20;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final String GROUND_BLOCK_TAG = "ground block";
     private static final float DEFAULT_PART_OF_SCREEN_TO_FILL = ((float)2)/3;
@@ -37,14 +38,16 @@ public class Terrain {
 
     public List<Block> createInRange(int minX, int maxX){
         ArrayList<Block> blockList = new ArrayList<>();
-        minX = minX-minX%Block.SIZE;
-        maxX = maxX+ Block.SIZE- maxX%Block.SIZE;
+        minX = minX-minX%Block.SIZE; // add buffer to left
+        maxX = maxX+ Block.SIZE- maxX%Block.SIZE; //add buffer to the right
         //iterate of x's in range
         for (int i = minX; i < maxX; i=i+Block.SIZE) {
             //for each x make the column of terrain so that terrain is filled through till the bottom of
             // the screen
-            float height = groundHeightAt(i);
-            for (int j = (int) height; j < windowDimensions.y(); j+=Block.SIZE) {
+            double height = Math.floor(groundHeightAt(i)/Block.SIZE) * Block.SIZE;
+//            for (int j = (int) height; j < windowDimensions.y(); j+=Block.SIZE) { //this is a better
+//            implementation but the targil instructions gave a default depth of 20 bricks
+            for (int j = (int) height; j < (int) height + DEFAULT_DEPTH * Block.SIZE; j+=Block.SIZE) {
                 Block block = new Block(new Vector2(i, j),
                         new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
                 block.setTag(GROUND_BLOCK_TAG);
