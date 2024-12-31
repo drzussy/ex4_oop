@@ -1,4 +1,4 @@
-package Pepse.world;
+package Src.Pepse.world;
 
 public class Terrain {
 }
