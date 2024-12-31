@@ -1,6 +1,8 @@
 package Src.Pepse;
 
+import Src.Pepse.world.Block;
 import Src.Pepse.world.Sky;
+import Src.Pepse.world.Terrain;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
@@ -10,7 +12,12 @@ import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
 
+import java.util.List;
+import java.util.Random;
+
 public class PepseGameManager extends GameManager{
+
+    private Vector2 windowDimensions;
 
     public static void main(String args[]){
         new PepseGameManager().run();
@@ -34,11 +41,19 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener,
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-        Vector2 windowDimensions = windowController.getWindowDimensions();
+
+        windowDimensions = windowController.getWindowDimensions();
         //initialize sky backround and set to layer
         GameObject sky = Sky.create(windowDimensions);
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
+        //terrain initialization
+        Random random = new Random();
+        Terrain terrain = new Terrain(windowDimensions, random.nextInt());
+        List<Block> terrainList = terrain.createInRange(0,(int) windowDimensions.x());
+        for(Block block: terrainList){
+            gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
+        }
     }
 
 }
