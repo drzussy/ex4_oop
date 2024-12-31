@@ -34,9 +34,15 @@ public class Terrain {
     public float groundHeightAt(float x) {
         float noise = (float) noiseGenerator.noise(x, Block.SIZE * NOISE_FACTOR);
         return groundHeightAtX0 + noise; }
+
     public List<Block> createInRange(int minX, int maxX){
         ArrayList<Block> blockList = new ArrayList<>();
+        minX = minX-minX%Block.SIZE;
+        maxX = maxX+ Block.SIZE- maxX%Block.SIZE;
+        //iterate of x's in range
         for (int i = minX; i < maxX; i=i+Block.SIZE) {
+            //for each x make the column of terrain so that terrain is filled through till the bottom of
+            // the screen
             float height = groundHeightAt(i);
             for (int j = (int) height; j < windowDimensions.y(); j+=Block.SIZE) {
                 Block block = new Block(new Vector2(i, j),

@@ -48,8 +48,7 @@ public class PepseGameManager extends GameManager{
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
 
         //terrain initialization
-        Random random = new Random();
-        Terrain terrain = new Terrain(windowDimensions, random.nextInt());
+        Terrain terrain = new Terrain(windowDimensions, new Random().nextInt());
         List<Block> terrainList = terrain.createInRange(0, (int) windowDimensions.x());
         for(Block block: terrainList){
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
