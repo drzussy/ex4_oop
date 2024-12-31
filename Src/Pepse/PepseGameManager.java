@@ -38,6 +38,7 @@ public class PepseGameManager extends GameManager{
         //initialize sky backround and set to layer
         GameObject sky = Sky.create(windowDimensions);
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
+
     }
 
 }
