@@ -1,4 +1,4 @@
-package Src.Pepse.world;
+package src.pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;

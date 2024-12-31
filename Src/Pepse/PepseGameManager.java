@@ -1,21 +1,27 @@
-package Src.Pepse;
+package src.pepse;
 
-import Src.Pepse.world.Block;
-import Src.Pepse.world.Sky;
-import Src.Pepse.world.Terrain;
+import src.pepse.world.Block;
+import src.pepse.world.Sky;
+import src.pepse.world.Terrain;
+import src.pepse.world.daynight.Night;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.Transition;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
+import src.pepse.world.daynight.Sun;
+import src.pepse.world.daynight.SunHalo;
 
 import java.util.List;
 import java.util.Random;
 
 public class PepseGameManager extends GameManager{
+
+    public static final int DEFAULT_CYCLE_LENGTH = 30;
 
     private Vector2 windowDimensions;
 
@@ -53,6 +59,18 @@ public class PepseGameManager extends GameManager{
         for(Block block: terrainList){
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
         }
+
+        //night initialization
+        GameObject night = new Night().create(windowDimensions, DEFAULT_CYCLE_LENGTH);
+        gameObjects().addGameObject(night, Layer.FOREGROUND);
+
+        //sun intialization
+        GameObject sun = Sun.create(windowDimensions, DEFAULT_CYCLE_LENGTH);
+        gameObjects().addGameObject(sun, Layer.BACKGROUND);
+
+        //halo initialization
+        GameObject sunHalo = SunHalo.create(sun);
+        gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
     }
 
 }

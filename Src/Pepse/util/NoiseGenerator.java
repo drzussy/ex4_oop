@@ -1,4 +1,6 @@
-package Src.Pepse.util;
+package src.pepse.util;
+
+import java.util.Random;
 
 public class NoiseGenerator {
     private double seed;

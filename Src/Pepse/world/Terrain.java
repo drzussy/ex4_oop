@@ -1,7 +1,7 @@
-package Src.Pepse.world;
+package src.pepse.world;
 
-import Src.Pepse.util.ColorSupplier;
-import Src.Pepse.util.NoiseGenerator;
+import src.pepse.util.ColorSupplier;
+import src.pepse.util.NoiseGenerator;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 
