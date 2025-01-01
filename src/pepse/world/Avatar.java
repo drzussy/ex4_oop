@@ -56,10 +56,12 @@ public class Avatar extends GameObject {
                 if (changeEnergy(JUMP_ENERGY_DECREASE)) {
                     transform().setVelocityY(VELOCITY_Y);
                 }
-            // static avatar, add 1 point of energy
-            } else {
-                changeEnergy(1);
+                // static avatar, add 1 point of energy
             }
+        }
+            if (getVelocity().x() == 0 && getVelocity().y() == 0){
+                changeEnergy(1);
+
         }
         transform().setVelocityX(xVel);
 
