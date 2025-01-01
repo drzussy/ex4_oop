@@ -1,8 +1,8 @@
 package src.pepse;
 
-import src.pepse.world.Block;
-import src.pepse.world.Sky;
-import src.pepse.world.Terrain;
+import danogl.gui.rendering.Renderable;
+import danogl.gui.rendering.TextRenderable;
+import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
 import danogl.GameObject;
@@ -16,14 +16,19 @@ import danogl.util.Vector2;
 import src.pepse.world.daynight.Sun;
 import src.pepse.world.daynight.SunHalo;
 
+import javax.security.auth.callback.Callback;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class PepseGameManager extends GameManager{
 
     public static final int DEFAULT_CYCLE_LENGTH = 30;
+    public static final double MIDDLE = 0.5f;
+    public static final int PLACEMENT_BUFFER = 4 * Block.SIZE;
 
     private Vector2 windowDimensions;
+
 
     public static void main(String args[]){
         new PepseGameManager().run();
@@ -47,7 +52,7 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener,
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-
+        windowController.setTargetFramerate(60);
         windowDimensions = windowController.getWindowDimensions();
         //initialize sky backround and set to layer
         GameObject sky = Sky.create(windowDimensions);
@@ -61,7 +66,7 @@ public class PepseGameManager extends GameManager{
         }
 
         //night initialization
-        GameObject night = new Night().create(windowDimensions, DEFAULT_CYCLE_LENGTH);
+        GameObject night = Night.create(windowDimensions, DEFAULT_CYCLE_LENGTH);
         gameObjects().addGameObject(night, Layer.FOREGROUND);
 
         //sun intialization
@@ -71,7 +76,25 @@ public class PepseGameManager extends GameManager{
         //halo initialization
         GameObject sunHalo = SunHalo.create(sun);
         gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
+
+        //avatar initialization
+        float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        Avatar avatar =
+                new Avatar(new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER),
+                inputListener, imageReader);
+        gameObjects().addGameObject(avatar);
+
+        // TODO energy Display - use callback of avatar::getEnergy()
+
+//        Callback callback = avatar::getEnergy;
+        ValueProvider callback = avatar::getEnergy;
+        gameObjects().addGameObject(new HealthDisplay(Vector2.ZERO ,windowDimensions, callback));
+
+
+
     }
+
+
 
 }
 

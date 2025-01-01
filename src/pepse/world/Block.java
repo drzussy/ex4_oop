@@ -7,6 +7,7 @@ import danogl.util.Vector2;
 
 public class Block  extends GameObject {
     public static final int SIZE = 30;
+    public static final String BLOCK = "block";
 
     /**
      * this class is a block of constant size- SIZE*SIZE which is immovable and does not allow for any other
@@ -19,5 +20,6 @@ public class Block  extends GameObject {
         super(topLeftCorner, Vector2.ONES.mult(SIZE), renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
+//        setTag(BLOCK);
     }
 }
