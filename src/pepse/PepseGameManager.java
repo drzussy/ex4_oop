@@ -52,7 +52,7 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener,
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-        windowController.setTargetFramerate(60);
+//        windowController.setTargetFramerate(100);
         windowDimensions = windowController.getWindowDimensions();
         //initialize sky backround and set to layer
         GameObject sky = Sky.create(windowDimensions);
