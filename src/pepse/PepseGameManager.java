@@ -15,9 +15,12 @@ import danogl.gui.WindowController;
 import danogl.util.Vector2;
 import src.pepse.world.daynight.Sun;
 import src.pepse.world.daynight.SunHalo;
+import src.pepse.world.trees.Flora;
+import src.pepse.world.trees.Tree;
 
 import javax.security.auth.callback.Callback;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -63,6 +66,13 @@ public class PepseGameManager extends GameManager{
         List<Block> terrainList = terrain.createInRange(0, (int) windowDimensions.x());
         for(Block block: terrainList){
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
+        }
+
+        Flora flora = new Flora(windowDimensions, new Random().nextInt(), terrain::surfaceLevelAt);
+        Map<Tree, GameObject> treeList = flora.createInRange(0, (int) windowDimensions.x());
+        for(Tree tree: treeList.keySet()){
+            gameObjects().addGameObject(tree);
+            gameObjects().addGameObject(treeList.get(tree));
         }
 
         //night initialization
