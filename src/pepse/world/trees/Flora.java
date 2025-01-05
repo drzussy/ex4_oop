@@ -33,8 +33,8 @@ public class Flora {
     }
 
     private int treeHeightAtInBlocks (float x) {
-        Random tempRand = new Random((int) (x*seed));
-        return MIN_TREE_HEIGHT + tempRand.nextInt(MAX_TREE_HEIGHT - MIN_TREE_HEIGHT + 1);
+        Random tempRand = new Random((long) (x/Block.SIZE*(seed%Block.SIZE)));
+        return tempRand.nextInt(MIN_TREE_HEIGHT, MAX_TREE_HEIGHT+1);
     }
 
     public Map<Tree, GameObject> createInRange(int minX, int maxX){
