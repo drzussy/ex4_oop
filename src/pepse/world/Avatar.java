@@ -34,7 +34,7 @@ public class Avatar extends GameObject {
     private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62);
     public static final String BLOCK_TAG = "block";
     public static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;
-    public static final int JUMP_ENERGY_DECREASE = -10;
+    public static final int JUMP_ENERGY_DECREASE = -35;
     public static final int FULL_ENERGY = 100;
     //    private final Vector2 dimensions = new Vector2(30, 30);
     private final UserInputListener inputListener;
@@ -84,7 +84,8 @@ public class Avatar extends GameObject {
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(false);
             }
-        } else if (getVelocity().x() == 0 && getVelocity().y() == 0){
+        }
+        if (getVelocity().x() == 0 && getVelocity().y() == 0){
             // static avatar, add 1 point of energy
             changeEnergy(1);
             renderer().setRenderable(idleAnimation);
@@ -107,8 +108,9 @@ public class Avatar extends GameObject {
     }
 
     public boolean changeEnergy(double change){
+        if (getVelocity().y()!=0) return true;
         if(energy+change<0) return false;
-        if (getVelocity().y()==0) energy = Math.min(energy+change, FULL_ENERGY);
+        energy = Math.min(energy+change, FULL_ENERGY);
         return true;
     }
 
