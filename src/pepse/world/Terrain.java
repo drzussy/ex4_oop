@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * this class does not extend gameObject buy only creates block (which are gameObjects)
+ * this class does not extend gameObject buy only creates Block objects (which are gameObjects)
  */
 public class Terrain {
     public static final int DEFAULT_DEPTH = 20;
