@@ -31,10 +31,10 @@ public class Avatar extends GameObject {
     private static final float VELOCITY_X = 200;
     private static final float VELOCITY_Y = -450;
     private static final float GRAVITY = 700;
-    private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62);
+    private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62); // first is width, second is height
     public static final String BLOCK_TAG = "block";
     public static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;
-    public static final int JUMP_ENERGY_DECREASE = -35;
+    public static final int JUMP_ENERGY_DECREASE = -10;
     public static final int FULL_ENERGY = 100;
     //    private final Vector2 dimensions = new Vector2(30, 30);
     private final UserInputListener inputListener;
