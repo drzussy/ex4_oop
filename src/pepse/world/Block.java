@@ -7,12 +7,12 @@ import danogl.util.Vector2;
 
 public class Block  extends GameObject {
     public static final int SIZE = 30;
-    public static final String BLOCK = "block";
+    private static final String BLOCK_TAG = "block";
 
     /**
-     * this class is a block of constant size- SIZE*SIZE which is immovable and does not allow for any other
-     * GameObject to pass through it should a collision between them be wanted by either.
-     * @param topLeftCorner
+     * this class is a block of constant size (SIZE*SIZE) which is immovable and does not allow for any other
+     * GameObject to pass through it, should a collision between them be wanted by either.
+     * @param topLeftCorner The top-left corner of the block to be created.
      * @param renderable of the block instance
      */
     public Block(Vector2 topLeftCorner, Renderable renderable) {
@@ -20,6 +20,6 @@ public class Block  extends GameObject {
         super(topLeftCorner, Vector2.ONES.mult(SIZE), renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
-//        setTag(BLOCK);
+        setTag(BLOCK_TAG);
     }
 }
