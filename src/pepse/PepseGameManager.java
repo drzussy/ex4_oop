@@ -8,20 +8,11 @@ import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.components.Transition;
-import danogl.gui.ImageReader;
-import danogl.gui.SoundReader;
-import danogl.gui.UserInputListener;
-import danogl.gui.WindowController;
+import danogl.gui.*;
 import danogl.util.Vector2;
-import src.pepse.world.daynight.Sun;
-import src.pepse.world.daynight.SunHalo;
-import src.pepse.world.trees.Flora;
-import src.pepse.world.trees.Tree;
-
-import javax.security.auth.callback.Callback;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import src.pepse.world.daynight.*;
+import src.pepse.world.trees.*;
+import java.util.*;
 import java.util.function.Function;
 
 public class PepseGameManager extends GameManager{
@@ -33,7 +24,7 @@ public class PepseGameManager extends GameManager{
     private Vector2 windowDimensions;
 
 
-    public static void main(String args[]){
+    public static void main(String[] args){
         new PepseGameManager().run();
     }
 
@@ -55,7 +46,7 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener,
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-//        windowController.setTargetFramerate(100);
+        windowController.setTargetFramerate(60);
         windowDimensions = windowController.getWindowDimensions();
         //initialize sky backround and set to layer
         GameObject sky = Sky.create(windowDimensions);
@@ -69,10 +60,13 @@ public class PepseGameManager extends GameManager{
         }
 
         Flora flora = new Flora(windowDimensions, new Random().nextInt(), terrain::surfaceLevelAt);
-        Map<Tree, GameObject> treeList = flora.createInRange(0, (int) windowDimensions.x());
+        Map<Tree, List<Block>> treeList = flora.createInRange(0, (int) windowDimensions.x());
         for(Tree tree: treeList.keySet()){
-            gameObjects().addGameObject(tree);
-            gameObjects().addGameObject(treeList.get(tree));
+            gameObjects().addGameObject(tree, Layer.STATIC_OBJECTS);
+            List<Block> treeLeaves = treeList.get(tree);
+            for (Block leaf : treeLeaves) {
+                gameObjects().addGameObject(leaf, Layer.BACKGROUND);
+            }
         }
 
         //night initialization
@@ -94,14 +88,8 @@ public class PepseGameManager extends GameManager{
                 inputListener, imageReader);
         gameObjects().addGameObject(avatar);
 
-        // TODO energy Display - use callback of avatar::getEnergy()
-
-//        Callback callback = avatar::getEnergy;
         ValueProvider callback = avatar::getEnergy;
         gameObjects().addGameObject(new HealthDisplay(Vector2.ZERO ,windowDimensions, callback));
-
-
-
     }
 
 
