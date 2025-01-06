@@ -8,6 +8,7 @@ import danogl.gui.rendering.AnimationRenderable;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
+import java.util.*;
 
 public class Avatar extends GameObject {
 
@@ -27,7 +28,8 @@ public class Avatar extends GameObject {
     private final AnimationRenderable idleAnimation;
     private final AnimationRenderable jumpingAnimation;
     private final AnimationRenderable runningAnimation;
-    // TODO: Implement jump observers. Something like: private final List<JumpObserver> jumpObservers = new List<>();
+    // TODO: Implement jump observers. Something like:
+    private final List<JumpObserver> jumpObservers = new ArrayList<>();
     private static final float VELOCITY_X = 200;
     private static final float VELOCITY_Y = -450;
     private static final float GRAVITY = 700;
@@ -66,11 +68,9 @@ public class Avatar extends GameObject {
             if (changeEnergy(JUMP_ENERGY_DECREASE)) {
                 transform().setVelocityY(VELOCITY_Y);
                 renderer().setRenderable(jumpingAnimation);
-                // TODO: once observers were implemented, add the following
-                /*  for (JumpObserver obs : jumpObservers) {
+                for (JumpObserver obs : jumpObservers) {
                         obs.notifyAboutJump();
-                    }
-                 */
+                }
             }
         } else if (inputListener.isKeyPressed(KeyEvent.VK_LEFT) && !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             if (changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
@@ -97,9 +97,12 @@ public class Avatar extends GameObject {
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         if(other.getTag().equals(BLOCK_TAG)){
-            //
+// TODO: correctly adjust the tag constants to not have multiple instances (one here, one in the original object)
             this.transform().setVelocityY(0);
             this.transform().setVelocityX(0);
+        }
+        if(other.getTag().equals("tree")){
+            transform().setVelocityX(0);
         }
     }
 
@@ -115,10 +118,10 @@ public class Avatar extends GameObject {
     }
 
     // TODO: uncomment this after implementing JumpObserver code
-//     public void addJumpObserver (JumpObserver obs) {
-//        this.jumpObservers.add(obs);
-//     }
-//    public void removeJumpObserver (JumpObserver obs) {
-//        this.jumpObservers.remove(obs);
-//    }
+     public void addJumpObserver (JumpObserver obs) {
+        this.jumpObservers.add(obs);
+     }
+    public void removeJumpObserver (JumpObserver obs) {
+        this.jumpObservers.remove(obs);
+    }
 }
