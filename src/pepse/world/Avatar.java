@@ -31,8 +31,8 @@ public class Avatar extends GameObject {
     private final AnimationRenderable jumpingAnimation;
     private final AnimationRenderable runningAnimation;
     private final List<JumpObserver> jumpObservers = new ArrayList<>();
-    private static final float WALKING_SPEED = 200;
-    private static final float JUMP_SPEED = 600;
+    private static final float WALKING_SPEED = 300;
+    private static final float JUMP_SPEED = 800;
     private static final float GRAVITY = 700;
     private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62); // first is width, second is height
 //    public static final String BLOCK_TAG = "block";
