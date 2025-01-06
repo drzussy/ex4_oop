@@ -1,10 +1,7 @@
 package src.pepse;
 
 import danogl.collisions.GameObjectCollection;
-import danogl.components.ScheduledTask;
-import danogl.components.Transition;
 import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.Renderable;
 import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
@@ -15,8 +12,6 @@ import danogl.util.Vector2;
 import src.pepse.world.daynight.*;
 import src.pepse.world.trees.*;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class PepseGameManager extends GameManager{
@@ -25,11 +20,13 @@ public class PepseGameManager extends GameManager{
     public static final double MIDDLE = 0.5f;
     public static final int PLACEMENT_BUFFER = 4 * Block.SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
-    private static final float FRUIT_RESPAWN_DELAY = 5;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     private static final int LEAF_LAYER = 50;
+    private static final int FRUIT_LAYER = 51;
     private static final int CHUNK_SIZE = 1500;
+    private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
+    private static final String AVATAR_TAG = "avatar";
     private GameObjectCollection gameObjects;
     private Avatar avatar;
     private Terrain terrain;
@@ -45,10 +42,8 @@ public class PepseGameManager extends GameManager{
 
     /**
      * this method initializes basic gameObjects sky, terrain avtar etc.
-     * @param imageReader Contains a single method: readImage, which reads an image from disk.
-     *                 See its documentation for help.
-     * @param soundReader Contains a single method: readSound, which reads a wav file from
-     *                    disk. See its documentation for help.
+     * @param imageReader Allows reading image files to create a Renderable.
+     * @param soundReader Allows reading sound files to create Sounds.
      * @param inputListener Contains a single method: isKeyPressed, which returns whether
      *                      a given key is currently pressed by the user or not. See its
      *                      documentation.
@@ -67,6 +62,36 @@ public class PepseGameManager extends GameManager{
         minLoadedX = (int) (-CHUNK_SIZE);
         maxLoadedX = (int) ((windowWidth/Block.SIZE)*Block.SIZE+CHUNK_SIZE);
 
+        createBackgroundObjects();
+
+        //terrain initialization
+        terrain = new Terrain(windowDimensions, new Random().nextInt());
+        flora = new Flora(new Random().nextInt(), terrain::surfaceLevelAt, imageReader::readImage, AVATAR_TAG);
+        loadWorld(minLoadedX, maxLoadedX);
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
+
+        // avatar initialization
+        float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        Vector2 avatarInitialPosition = new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
+        avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
+        gameObjects.addGameObject(avatar);
+        avatar.setTag(AVATAR_TAG);
+
+        // Create energy display
+        Supplier<Double> callback = avatar::getEnergy;
+        gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
+
+        // TODO - remove this
+        Supplier<Double> locationCallback = () -> (double) avatar.getCenter().x();
+        gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth*0.5f, 0) ,DISPLAY_DIMENSIONS, locationCallback), Layer.UI);
+
+        Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
+        setCamera(new Camera(avatar, cameraPosition,
+                windowController.getWindowDimensions(),
+                windowController.getWindowDimensions()));
+    }
+
+    private void createBackgroundObjects() {
         //initialize sky background and set to layer
         GameObject sky = Sky.create(windowDimensions);
         gameObjects = gameObjects();
@@ -91,46 +116,6 @@ public class PepseGameManager extends GameManager{
                 gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
             }
         }
-
-        //terrain initialization
-        terrain = new Terrain(windowDimensions, new Random().nextInt());
-        flora = new Flora(new Random().nextInt(), terrain::surfaceLevelAt, imageReader::readImage);
-
-        loadWorld(minLoadedX, maxLoadedX);
-//        List<Block> terrainList = terrain.createInRange(minLoadedX, maxLoadedX);
-//        Map<Tree, List<GameObject>> treeList = flora.createInRange(minLoadedX, maxLoadedX);
-//        for(Block block: terrainList){
-//            gameObjects.addGameObject(block, Layer.STATIC_OBJECTS);
-//        }
-//        for(Tree tree: treeList.keySet()){
-//            gameObjects.addGameObject(tree, Layer.STATIC_OBJECTS);
-//            List<GameObject> treeLeavesAndFruit = treeList.get(tree);
-//            for (GameObject obj : treeLeavesAndFruit) {
-//                if (obj.getTag().equals("leaf")) gameObjects.addGameObject(obj, LEAF_LAYER);
-//                else gameObjects.addGameObject(obj, Layer.STATIC_OBJECTS);
-//            }
-//        }
-        gameObjects.layers().shouldLayersCollide(Layer.FOREGROUND, Layer.DEFAULT, false);
-
-        // avatar initialization
-        float middle_x = (float) (windowDimensions.x()* MIDDLE);
-        Vector2 avatarInitialPosition = new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
-        avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
-        gameObjects.addGameObject(avatar);
-        avatar.setTag("avatar"); // TODO: move to someplace else
-
-        // Create energy display
-        Supplier<Double> callback = avatar::getEnergy;
-        gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,windowDimensions, callback), Layer.UI);
-
-        // TODO - remove this
-        Supplier<Double> locationCallback = () -> (double) avatar.getCenter().x();
-        gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth*0.5f, 0) ,windowDimensions, locationCallback), Layer.UI);
-
-        Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
-        setCamera(new Camera(avatar, cameraPosition,
-                windowController.getWindowDimensions(),
-                windowController.getWindowDimensions()));
     }
 
     @Override
@@ -149,6 +134,7 @@ public class PepseGameManager extends GameManager{
         for (GameObject obj : gameObjects) {
             if (obj.getTopLeftCorner().x()<minLoadedX || obj.getTopLeftCorner().x()>maxLoadedX) {
                 gameObjects.removeGameObject(obj, LEAF_LAYER); // Removes only leaves
+                gameObjects.removeGameObject(obj, FRUIT_LAYER); // Removes only fruit
                 gameObjects.removeGameObject(obj, Layer.STATIC_OBJECTS); // removes only trees and ground
             }
         }
@@ -165,6 +151,7 @@ public class PepseGameManager extends GameManager{
             List<GameObject> treeLeavesAndFruit = treeList.get(tree);
             for (GameObject obj : treeLeavesAndFruit) {
                 if (obj.getTag().equals(Flora.LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_LAYER);
+                else if (obj.getTag().equals(Flora.FRUIT_TAG)) gameObjects.addGameObject(obj,FRUIT_LAYER);
                 else gameObjects.addGameObject(obj, Layer.STATIC_OBJECTS);
             }
         }
