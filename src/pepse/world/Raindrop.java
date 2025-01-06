@@ -26,11 +26,9 @@ public class Raindrop extends GameObject {
      *                      the GameObject will not be rendered.
      */
     public Raindrop(Vector2 topLeftCorner, Renderable renderable){
-        //}, Consumer gameObjectsRemove) {
         super(topLeftCorner, DIMENSIONS, renderable);
-//        super(topLeftCorner, DIMENSIONS, new OvalRenderable(Color.BLACK));
         transform().setAccelerationY(GRAVITY);
-
+        setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         new Transition<>(this, renderer()::setOpaqueness, NO_OPACITY,
                 0f, Transition.LINEAR_INTERPOLATOR_FLOAT, Raindrop.TEARDROP_FALL_TIME,
                 Transition.TransitionType.TRANSITION_ONCE, null);

@@ -3,6 +3,7 @@ package src.pepse.world;
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
+import danogl.gui.rendering.Camera;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -108,14 +109,16 @@ public class Cloud implements JumpObserver{
 
     @Override
     public void notifyAboutJump() {
-        //cause rainblocks to fall
+        //cause raindrops to fall
         Random random = new Random();
         Renderable raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
         for(GameObject cloudBlock: cloudList)
             if(random.nextInt(10) < RAINDROP_CHANCES){
-                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
-                Raindrop raindrop = new Raindrop(cloudBlock.getCenter(), raindropRenderable);
-                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+//                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
+                Raindrop raindrop =
+                        new Raindrop(cloudBlock.getCenter(),
+                        raindropRenderable);
+//                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                 gameObjectsAdd.accept(raindrop);
 
             }
