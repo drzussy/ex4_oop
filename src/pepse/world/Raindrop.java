@@ -14,8 +14,8 @@ public class Raindrop extends GameObject {
     public static final String RAIN_TAG = "rain";
     private static final float GRAVITY = 100;
     public static final Vector2 DIMENSIONS = new Vector2(20, 30);
-    public static final float NO_OPAQUENESS = 100f;
-    public static final float TEARDROP_FALL_TIME = 1f;
+    public static final float TEARDROP_FALL_TIME = 3f;
+    public static final float NO_OPACITY = 1f;
 
     /**
      * Construct a new GameObject instance.
@@ -31,7 +31,7 @@ public class Raindrop extends GameObject {
 //        super(topLeftCorner, DIMENSIONS, new OvalRenderable(Color.BLACK));
         transform().setAccelerationY(GRAVITY);
 
-        new Transition<>(this, renderer()::setOpaqueness, 1f,
+        new Transition<>(this, renderer()::setOpaqueness, NO_OPACITY,
                 0f, Transition.LINEAR_INTERPOLATOR_FLOAT, Raindrop.TEARDROP_FALL_TIME,
                 Transition.TransitionType.TRANSITION_ONCE, null);
         setTag(RAIN_TAG);

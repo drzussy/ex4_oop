@@ -113,9 +113,9 @@ public class Cloud implements JumpObserver{
         Renderable raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
         for(GameObject cloudBlock: cloudList)
             if(random.nextInt(10) < RAINDROP_CHANCES){
-//                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
+                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
                 Raindrop raindrop = new Raindrop(cloudBlock.getCenter(), raindropRenderable);
-//                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                 gameObjectsAdd.accept(raindrop);
 
             }
