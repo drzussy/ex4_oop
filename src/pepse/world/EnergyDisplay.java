@@ -5,10 +5,12 @@ import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 
+import java.util.function.Supplier;
+
 public class EnergyDisplay extends GameObject {
 
     public static final String FULL_HEALTH = "100";
-    private final ValueProvider callback;
+    private final Supplier<Double> callback;
 
     /**
      * Construct a new HealthDisplay instance.
@@ -17,7 +19,7 @@ public class EnergyDisplay extends GameObject {
      *                      Note: this will stay constant with respect to the camera.
      * @param dimensions    Width and height in window coordinates.
      */
-    public EnergyDisplay(Vector2 topLeftCorner, Vector2 dimensions, ValueProvider callback
+    public EnergyDisplay(Vector2 topLeftCorner, Vector2 dimensions, Supplier<Double> callback
                          ) {
         super(topLeftCorner, Vector2.ONES.mult(100), new TextRenderable(FULL_HEALTH));
         this.callback = callback;
@@ -28,7 +30,7 @@ public class EnergyDisplay extends GameObject {
     public void update(float deltaTime) {
         super.update(deltaTime);
         this.renderer().setRenderable(new TextRenderable(
-                Integer.toString((int) Math.floor(callback.getValue()))));
+                Integer.toString((int) Math.floor(callback.get()))));
 
     }
 }
