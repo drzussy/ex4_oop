@@ -18,11 +18,12 @@ public class EnergyDisplay extends GameObject {
      * @param topLeftCorner Position of the display, in window coordinates (pixels).
      *                      Note: this will stay constant with respect to the camera.
      * @param dimensions    Width and height in window coordinates.
+     * @param valueGetter   A callback providing the number to display, using get().
+     *                      In this case - the avatar's energy.
      */
-    public EnergyDisplay(Vector2 topLeftCorner, Vector2 dimensions, Supplier<Double> callback
-                         ) {
-        super(topLeftCorner, Vector2.ONES.mult(100), new TextRenderable(FULL_HEALTH));
-        this.callback = callback;
+    public EnergyDisplay(Vector2 topLeftCorner, Vector2 dimensions, Supplier<Double> valueGetter) {
+        super(topLeftCorner, dimensions, new TextRenderable(FULL_HEALTH));
+        this.callback = valueGetter;
         setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
     }
 
