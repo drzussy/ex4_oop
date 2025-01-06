@@ -2,28 +2,25 @@ package src.pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
-import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import src.pepse.world.Avatar;
 
-import java.util.function.Consumer;
 
 public class Fruit extends GameObject {
 
     public static final String FRUIT_TAG = "fruit";
     private static final Vector2 FRUIT_SIZE = new Vector2(17, 27);
     private static final int FRUIT_ENERGY_BONUS = 20;
-//    private final Consumer<GameObject> eatFruit;
     private static final float FRUIT_RESPAWN_DELAY = 3;
+    private final String avatarTag;
     private boolean collidable = true;
     Renderable fruitImage;
 
-    public Fruit(Vector2 topLeftCorner, Renderable renderable) {
-//                 Consumer<GameObject> eatFruit) {
+    public Fruit(Vector2 topLeftCorner, Renderable renderable, String avatarTag) {
         super(topLeftCorner, FRUIT_SIZE ,renderable);
+        this.avatarTag = avatarTag;
         this.setTag(FRUIT_TAG);
         this.fruitImage = renderable;
     }
@@ -36,8 +33,7 @@ public class Fruit extends GameObject {
      */
     @Override
     public boolean shouldCollideWith(GameObject other) {
-        if (!collidable || !other.getTag().equals("avatar")) return false;
-        return true;
+        return collidable && other.getTag().equals("avatar");
     }
 
     /**
@@ -51,7 +47,7 @@ public class Fruit extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (!other.getTag().equals("avatar")) return;
+        if (!other.getTag().equals(avatarTag)) return;
         Avatar avatar = (Avatar) other;
         avatar.changeEnergy(FRUIT_ENERGY_BONUS);
         despawnFruit();

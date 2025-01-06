@@ -18,6 +18,7 @@ import java.util.function.Function;
 public class Flora {
     public static final String FRUIT_TAG = "fruit";
     public static final String LEAF_TAG = "leaf";
+    private final String avatarTag;
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
     private static final int MAX_CANOPY_HEIGHT = 10;
@@ -42,10 +43,11 @@ public class Flora {
     private static final String pathToPineappleImage = "assets/pineapple.png";
 
     public Flora(int seed, Function<Float, Float> getGroundHeightAt,
-                 BiFunction<String, Boolean, Renderable> readImage) {
+                 BiFunction<String, Boolean, Renderable> readImage, String avatarTag) {
         this.seed = seed;
         this.getGroundHeightAt = getGroundHeightAt;
         this.pineappleImage = readImage.apply(pathToPineappleImage, true);
+        this.avatarTag = avatarTag;
     }
 
 
@@ -69,7 +71,7 @@ public class Flora {
         Vector2 treeTopLeftCorner = new Vector2(x, getGroundHeightAt.apply(x) - treeHeight);
         Vector2 treeSize = new Vector2(Block.SIZE, treeHeight);
         Renderable treeRender = new RectangleRenderable(
-                ColorSupplier.approximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA));
+                approximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
         return new Tree (treeTopLeftCorner, treeSize, treeRender);
     }
 
@@ -86,7 +88,7 @@ public class Flora {
         float rightShift = (float) (canopyWidth -1)*Block.SIZE/2;
         float downShift = (float) (canopyHeight *Block.SIZE)/2;
         Renderable leafRender = new RectangleRenderable(
-                ColorSupplier.approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA));
+                approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
         for (int row = 0; row< canopyHeight; row++) {
             for (int col = 0; col< canopyWidth; col++) {
                 if (random.nextFloat()<LEAF_CHANCE) {
@@ -115,13 +117,10 @@ public class Flora {
                     float delayTime = random.nextFloat()*2;
                     new ScheduledTask(leaf, delayTime, false, createLeafTransitions);
                     foliageList.add(leaf);
-                } else if (random.nextFloat() < FRUIT_CHANCE) {
-//                    Renderable fruitRenderable = new OvalRenderable(getRandomBrightColor(tempRand));
-//                    Renderable fruitRenderable = new ImageRenderable();
+                } if (random.nextFloat() < FRUIT_CHANCE) {
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
                             col*Block.SIZE- rightShift, row*Block.SIZE- downShift));
-//                    Fruit fruit = new Fruit(leafTopLeft, fruitRenderable);
-                    Fruit fruit = new Fruit(leafTopLeft, pineappleImage);
+                    Fruit fruit = new Fruit(leafTopLeft, pineappleImage, avatarTag);
                     fruit.setTag(FRUIT_TAG);
                     foliageList.add(fruit);
                 }
@@ -129,12 +128,18 @@ public class Flora {
         }
         return foliageList;
     }
-//    private static Color getRandomBrightColor(Random random) {
-//        // Ensure at least one component (R, G, B) is high
-//        int r = random.nextInt(156) + 100; // Random value between 100 and 255
-//        int g = random.nextInt(156) + 100; // Random value between 100 and 255
-//        int b = random.nextInt(156); // Random value between 0 and 155
-//
-//        return new Color(r, g, b);
-//    }
+
+    private Color approximateColor(Color baseColor, int colorDelta, Random random) {
+        return new Color(
+                randomChannelInRange(baseColor.getRed()-colorDelta, baseColor.getRed()+colorDelta,
+                        random),
+                randomChannelInRange(baseColor.getGreen()-colorDelta, baseColor.getGreen()+colorDelta,
+                        random),
+                randomChannelInRange(baseColor.getBlue()-colorDelta, baseColor.getBlue()+colorDelta,
+                        random));
+    }
+    private static int randomChannelInRange(int min, int max, Random random) {
+        int channel = random.nextInt(max-min+1) + min;
+        return Math.min(255, Math.max(channel, 0));
+    }
 }
