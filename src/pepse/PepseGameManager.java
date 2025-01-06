@@ -154,11 +154,11 @@ public class PepseGameManager extends GameManager{
                 gameObjects.removeGameObject(obj, FRUIT_LAYER); // Removes only fruit
                 gameObjects.removeGameObject(obj, Layer.STATIC_OBJECTS); // removes only trees and ground
             }
-            if(obj.getTag().equals(Raindrop.RAIN_TAG)){
-                if(obj.renderer().getOpaqueness() ==0) {
-                    gameObjects.removeGameObject(obj);
-                }
-            }
+//            if(obj.getTag().equals(Raindrop.RAIN_TAG)){
+//                if(obj.renderer().getOpaqueness() ==0) {
+//                    gameObjects.removeGameObject(obj);
+//                }
+//            }
         }
     }
 

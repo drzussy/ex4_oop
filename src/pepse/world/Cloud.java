@@ -120,7 +120,8 @@ public class Cloud implements JumpObserver{
 //                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
                 Raindrop raindrop =
                         new Raindrop(cloudBlock.getCenter(),
-                        raindropRenderable);
+                        raindropRenderable,
+                                gameObjectsRemove);
 //                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                 gameObjectsAdd.accept(raindrop);
 
