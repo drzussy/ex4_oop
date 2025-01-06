@@ -1,25 +1,23 @@
 package src.pepse;
 
-import danogl.gui.rendering.Renderable;
-import danogl.gui.rendering.TextRenderable;
+import danogl.gui.rendering.Camera;
 import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
-import danogl.components.Transition;
 import danogl.gui.*;
 import danogl.util.Vector2;
 import src.pepse.world.daynight.*;
 import src.pepse.world.trees.*;
 import java.util.*;
-import java.util.function.Function;
 
 public class PepseGameManager extends GameManager{
 
     public static final int DEFAULT_CYCLE_LENGTH = 30;
     public static final double MIDDLE = 0.5f;
     public static final int PLACEMENT_BUFFER = 4 * Block.SIZE;
+    private static final float CAMERA_HEIGHT = 0.1F;
 
     private Vector2 windowDimensions;
 
@@ -59,7 +57,7 @@ public class PepseGameManager extends GameManager{
             gameObjects().addGameObject(block, Layer.STATIC_OBJECTS);
         }
 
-        Flora flora = new Flora(windowDimensions, new Random().nextInt(), terrain::surfaceLevelAt);
+        Flora flora = new Flora(new Random().nextInt(), terrain::surfaceLevelAt);
         Map<Tree, List<Block>> treeList = flora.createInRange(0, (int) windowDimensions.x());
         for(Tree tree: treeList.keySet()){
             gameObjects().addGameObject(tree, Layer.STATIC_OBJECTS);
@@ -83,16 +81,19 @@ public class PepseGameManager extends GameManager{
 
         //avatar initialization
         float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        Vector2 avatarInitialPosition = new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
         Avatar avatar =
-                new Avatar(new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER),
+                new Avatar(avatarInitialPosition,
                 inputListener, imageReader);
         gameObjects().addGameObject(avatar);
 
         ValueProvider callback = avatar::getEnergy;
-        gameObjects().addGameObject(new HealthDisplay(Vector2.ZERO ,windowDimensions, callback));
+        gameObjects().addGameObject(new EnergyDisplay(Vector2.ZERO ,windowDimensions, callback));
+
+        Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
+        setCamera(new Camera(avatar, cameraPosition,
+                windowController.getWindowDimensions(),
+                windowController.getWindowDimensions()));
     }
-
-
-
 }
 
