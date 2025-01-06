@@ -30,15 +30,14 @@ public class Avatar extends GameObject {
     private final AnimationRenderable runningAnimation;
     // TODO: Implement jump observers. Something like:
     private final List<JumpObserver> jumpObservers = new ArrayList<>();
-    private static final float VELOCITY_X = 200;
-    private static final float VELOCITY_Y = -450;
+    private static final float WALKING_SPEED = 200;
+    private static final float JUMP_SPEED = 600;
     private static final float GRAVITY = 700;
     private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62); // first is width, second is height
-    public static final String BLOCK_TAG = "block";
+//    public static final String BLOCK_TAG = "block";
     public static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;
     public static final int JUMP_ENERGY_DECREASE = -10;
     public static final int FULL_ENERGY = 100;
-    //    private final Vector2 dimensions = new Vector2(30, 30);
     private final UserInputListener inputListener;
     private double energy = 100;
 
@@ -66,7 +65,7 @@ public class Avatar extends GameObject {
             // TODO: Maybe add check you're not jumping at the peak of the current jump,
             // TODO where your vertical speed is 0 for a brief moment
             if (changeEnergy(JUMP_ENERGY_DECREASE)) {
-                transform().setVelocityY(VELOCITY_Y);
+                transform().setVelocityY(-JUMP_SPEED);
                 renderer().setRenderable(jumpingAnimation);
                 for (JumpObserver obs : jumpObservers) {
                         obs.notifyAboutJump();
@@ -74,13 +73,13 @@ public class Avatar extends GameObject {
             }
         } else if (inputListener.isKeyPressed(KeyEvent.VK_LEFT) && !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             if (changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
-                xVel -= VELOCITY_X;
+                xVel -= WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(true);
             }
         } else if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT) && !inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
             if (changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
-                xVel += VELOCITY_X;
+                xVel += WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(false);
             }
@@ -96,14 +95,12 @@ public class Avatar extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if(other.getTag().equals(BLOCK_TAG)){
-// TODO: correctly adjust the tag constants to not have multiple instances (one here, one in the original object)
-            this.transform().setVelocityY(0);
-            this.transform().setVelocityX(0);
-        }
-        if(other.getTag().equals("tree")){
-            transform().setVelocityX(0);
-        }
+//// TODO: correctly adjust the tag constants to not have multiple instances (one here, one in the original object)
+        // This code is unnecessary!
+//        if(other.getTag().equals(BLOCK_TAG)){
+//            this.transform().setVelocityY(0);
+//            this.transform().setVelocityX(0);
+//        }
     }
 
     public double getEnergy(){
@@ -117,7 +114,6 @@ public class Avatar extends GameObject {
         return true;
     }
 
-    // TODO: uncomment this after implementing JumpObserver code
      public void addJumpObserver (JumpObserver obs) {
         this.jumpObservers.add(obs);
      }
