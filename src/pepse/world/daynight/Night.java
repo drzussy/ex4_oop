@@ -11,8 +11,8 @@ import java.awt.*;
 public class Night {
 
     public static final String NIGHT_TAG = "night";
-    public static final float MIDNIGHT_OPAQUENESS = 0.5f;
-    public static final float HALF_DAY_TRANSITION_TIME = 15f;
+    private static final float MIDNIGHT_OPAQUENESS = 0.5f;
+    private static final float HALF_DAY_TRANSITION_TIME = 15f;
 
     public static GameObject create(Vector2 windowDimensions, float cycleLength){
         GameObject night = new GameObject(Vector2.ZERO,
