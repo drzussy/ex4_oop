@@ -1,5 +1,6 @@
 package src.pepse;
 
+import danogl.Tools;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.Camera;
 import src.pepse.world.*;
@@ -11,6 +12,8 @@ import danogl.gui.*;
 import danogl.util.Vector2;
 import src.pepse.world.daynight.*;
 import src.pepse.world.trees.*;
+
+import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -27,13 +30,15 @@ public class PepseGameManager extends GameManager{
     private static final int CHUNK_SIZE = 1500;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String AVATAR_TAG = "avatar";
-    private GameObjectCollection gameObjects;
+    private UserInputListener inputListener;
+    private WindowController windowController;
     private Avatar avatar;
     private Terrain terrain;
     private Flora flora;
     private Vector2 windowDimensions;
     private int minLoadedX;
     private int maxLoadedX;
+    private GameObjectCollection gameObjects;
 
 
     public static void main(String[] args){
@@ -56,6 +61,9 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener,
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
+        this.gameObjects = gameObjects();
+        this.windowController = windowController;
+        this.inputListener = inputListener;
         windowController.setTargetFramerate(60);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
@@ -66,7 +74,7 @@ public class PepseGameManager extends GameManager{
 
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
-        flora = new Flora(new Random().nextInt(), terrain::surfaceLevelAt, imageReader::readImage, AVATAR_TAG);
+        flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage, AVATAR_TAG);
         loadWorld(minLoadedX, maxLoadedX);
         gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
 
@@ -83,7 +91,8 @@ public class PepseGameManager extends GameManager{
 
         // TODO - remove this
         Supplier<Double> locationCallback = () -> (double) avatar.getCenter().x();
-        gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth*0.5f, 0) ,DISPLAY_DIMENSIONS, locationCallback), Layer.UI);
+        gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth-(5*DISPLAY_DIMENSIONS.x()), 0),
+                DISPLAY_DIMENSIONS, locationCallback), Layer.UI);
 
         Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
         setCamera(new Camera(avatar, cameraPosition,
@@ -94,7 +103,6 @@ public class PepseGameManager extends GameManager{
     private void createBackgroundObjects() {
         //initialize sky background and set to layer
         GameObject sky = Sky.create(windowDimensions);
-        gameObjects = gameObjects();
         gameObjects.addGameObject(sky, Layer.BACKGROUND);
         // night initialization
         GameObject night = Night.create(windowDimensions, DEFAULT_CYCLE_LENGTH);
@@ -121,6 +129,8 @@ public class PepseGameManager extends GameManager{
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        // TODO: remove the following line
+        if (inputListener.isKeyPressed(KeyEvent.VK_R)) windowController.resetGame();
         if (avatar.getCenter().x()-minLoadedX < CHUNK_SIZE) {
             loadWorld(minLoadedX-CHUNK_SIZE, minLoadedX);
             minLoadedX -= CHUNK_SIZE;
