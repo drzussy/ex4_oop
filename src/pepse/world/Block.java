@@ -7,7 +7,7 @@ import danogl.util.Vector2;
 
 public class Block  extends GameObject {
     public static final int SIZE = 30;
-    private static final String BLOCK_TAG = "block";
+    static final String BLOCK_TAG = "block";
 
     /**
      * this class is a block of constant size (SIZE*SIZE) which is immovable and does not allow for any other

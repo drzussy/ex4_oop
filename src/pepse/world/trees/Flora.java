@@ -2,6 +2,7 @@ package src.pepse.world.trees;
 
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
+import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -27,6 +28,9 @@ public class Flora {
     private static final Color TREE_TRUNK_COLOR = new Color(124, 51, 10);
     private static final int TREE_COLOR_DELTA = 50;
     private static final int LEAF_COLOR_DELTA = 30;
+    public static final float FRUIT_CHANCE = 0.2f;
+    public static final String FRUIT_TAG = "fruit";
+    public static final String LEAF_TAG = "leaf";
     private final Random random;
     private final Function<Float, Float> getGroundHeightAt;
     private final int seed;
@@ -66,7 +70,7 @@ public class Flora {
     }
 
     private ArrayList<Block> generateLeaves(float x, Vector2 treeTopLeftCorner) {
-        ArrayList<Block> leafList = new ArrayList<>();
+        ArrayList<Block> folliageList = new ArrayList<>();
         Random tempRand = new Random(Objects.hash(x, seed));
         float rightShift = (float) (CANOPY_WIDTH-1)*Block.SIZE/2;
         float downShift = (float) (CANOPY_HEIGHT*Block.SIZE)/2;
@@ -98,10 +102,21 @@ public class Flora {
                     };
                     float delayTime = tempRand.nextFloat()*2;
                     new ScheduledTask(leaf, delayTime, false, createLeafTransitions);
-                    leafList.add(leaf);
+                    leaf.setTag(LEAF_TAG);
+                    folliageList.add(leaf);
+                } else if (tempRand.nextFloat() < FRUIT_CHANCE) {
+                    //TODO CREATE FRUIT
+                    Renderable fruitRenderable = new OvalRenderable(Fruit.getRandomBrightColor());
+                    Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
+                            col*Block.SIZE- rightShift, row*Block.SIZE- downShift));
+                    Block fruit = new Fruit(leafTopLeft, fruitRenderable);
+//                    fruit.setTag(FRUIT_TAG);
+                    folliageList.add(fruit);
                 }
             }
         }
-        return leafList;
+        return folliageList;
     }
+
+
 }

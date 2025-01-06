@@ -10,6 +10,8 @@ import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
+import static src.pepse.world.Block.BLOCK_TAG;
+
 public class Avatar extends GameObject {
 
     private static final String[] IDLE_IMAGES_PATHS = {
@@ -97,10 +99,10 @@ public class Avatar extends GameObject {
         super.onCollisionEnter(other, collision);
 //// TODO: correctly adjust the tag constants to not have multiple instances (one here, one in the original object)
         // This code is unnecessary!
-//        if(other.getTag().equals(BLOCK_TAG)){
-//            this.transform().setVelocityY(0);
-//            this.transform().setVelocityX(0);
-//        }
+        if(other.getTag().equals(BLOCK_TAG)){
+            this.transform().setVelocityY(0);
+            this.transform().setVelocityX(0);
+        }
     }
 
     public double getEnergy(){
