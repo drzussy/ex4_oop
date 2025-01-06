@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 public class Cloud implements JumpObserver{
 
+    public static final String ASSETS_ALIEN_PNG = "assets/alien.png";
     private static final Color CLOUD_COLOR = new Color(149, 166, 166, 128);
     private static final float CLOUD_SPEED = 300;
     private static final float CLOUD_BLOCK_CHANCE = 0.8f;
@@ -26,7 +27,8 @@ public class Cloud implements JumpObserver{
     private static final float CLOUD_BUFFER = 0.1F;
     public static final int NUMBER_OF_RAINDROPS = 10;
     public static final int RAINDROP_CHANCES = 3;
-    public static final String RAINDROP_PATH = "assets/raindrop.png";
+//    public static final String RAINDROP_PATH = "assets/raindrop.png";
+    public static final String RAINDROP_PATH = "assets/laser.png";
     public static String Tag = "cloud";
     private final Vector2 topLeftCorner;
     private final Vector2 dimensions;
@@ -72,8 +74,9 @@ public class Cloud implements JumpObserver{
                 if (cloudRow.get(col)) {
                     float rightShift = col*Block.SIZE;
                     Vector2 cloudTopLeft = topLeftCorner.add(new Vector2(col, row).mult(Block.SIZE));
-                    Block cloud = new Block(cloudTopLeft, new RectangleRenderable(
-                            ColorSupplier.approximateColor(CLOUD_COLOR, CLOUD_COLOR_DELTA)));
+//                    Block cloud = new Block(cloudTopLeft, new RectangleRenderable(
+//                            ColorSupplier.approximateColor(CLOUD_COLOR, CLOUD_COLOR_DELTA)));
+                    Block cloud = new Block(cloudTopLeft, imageReader.apply(ASSETS_ALIEN_PNG, true));
                     cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                     new Transition<>(cloud, (Float x)->cloud.transform().setTopLeftCornerX(x),
                             windowDimensions.x()*(-2*CLOUD_BUFFER)+rightShift,
