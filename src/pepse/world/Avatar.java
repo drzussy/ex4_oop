@@ -30,7 +30,6 @@ public class Avatar extends GameObject {
     private final AnimationRenderable idleAnimation;
     private final AnimationRenderable jumpingAnimation;
     private final AnimationRenderable runningAnimation;
-    // TODO: Implement jump observers. Something like:
     private final List<JumpObserver> jumpObservers = new ArrayList<>();
     private static final float WALKING_SPEED = 200;
     private static final float JUMP_SPEED = 600;
@@ -74,13 +73,13 @@ public class Avatar extends GameObject {
                 }
             }
         } else if (inputListener.isKeyPressed(KeyEvent.VK_LEFT) && !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
-            if (changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
+            if (getVelocity().y()!=0 || changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
                 xVel -= WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(true);
             }
         } else if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT) && !inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
-            if (changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
+            if (getVelocity().y()!=0 || changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
                 xVel += WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(false);
@@ -110,7 +109,6 @@ public class Avatar extends GameObject {
     }
 
     public boolean changeEnergy(double change){
-        if (getVelocity().y()!=0) return true;
         if(energy+change<0) return false;
         energy = Math.min(energy+change, FULL_ENERGY);
         return true;
