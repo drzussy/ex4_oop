@@ -23,7 +23,7 @@ public class Raindrop extends GameObject {
      *                          Note that (0,0) is the top-left corner of the window.
      * @param renderable        The renderable representing the object. Can be null, in which case
      *                          the GameObject will not be rendered.
-     * @param gameObjectsRemove
+     * @param gameObjectsRemove callback to function thatll remove object once opacity is 0
      */
     public Raindrop(Vector2 topLeftCorner, Renderable renderable, Consumer<GameObject> gameObjectsRemove){
         super(topLeftCorner, DIMENSIONS, renderable);

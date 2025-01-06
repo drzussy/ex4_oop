@@ -3,13 +3,9 @@ package src.pepse.world;
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
-import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.util.ColorSupplier;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,17 +15,11 @@ import java.util.function.Consumer;
 public class Cloud implements JumpObserver{
 
     public static final String ASSETS_ALIEN_PNG = "assets/alien.png";
-    private static final Color CLOUD_COLOR = new Color(149, 166, 166, 128);
-    private static final float CLOUD_SPEED = 300;
     private static final float CLOUD_BLOCK_CHANCE = 0.8f;
-    private static final int CLOUD_COLOR_DELTA = 20;
     private static final float CLOUD_CYCLE_TIME = 5;
     private static final float CLOUD_BUFFER = 0.1F;
-    public static final int NUMBER_OF_RAINDROPS = 10;
     public static final int RAINDROP_CHANCES = 3;
-//    public static final String RAINDROP_PATH = "assets/raindrop.png";
     public static final String RAINDROP_PATH = "assets/laser.png";
-    public static String Tag = "cloud";
     private final Vector2 topLeftCorner;
     private final Vector2 dimensions;
     private final Vector2 windowDimensions;
@@ -37,7 +27,6 @@ public class Cloud implements JumpObserver{
     private final BiFunction<String, Boolean, Renderable> imageReader;
     private final Consumer<GameObject> gameObjectsRemove;
     private List<GameObject> cloudList;
-//    private static ArrayList<GameObject> raindropList;
 
     /**
      * Construct a new cloud.

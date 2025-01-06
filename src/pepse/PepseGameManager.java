@@ -1,9 +1,7 @@
 package src.pepse;
 
-import danogl.Tools;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.Renderable;
 import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
@@ -71,7 +69,7 @@ public class PepseGameManager extends GameManager{
         minLoadedX = (int) (-CHUNK_SIZE);
         maxLoadedX = (int) ((windowWidth/Block.SIZE)*Block.SIZE+CHUNK_SIZE);
 
-        createBackgroundObjects(imageReader);
+        createBackgroundObjects();
 
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
@@ -114,7 +112,7 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions()));
     }
 
-    private void createBackgroundObjects(ImageReader imageReader) {
+    private void createBackgroundObjects() {
         //initialize sky background and set to layer
         GameObject sky = Sky.create(windowDimensions);
         gameObjects.addGameObject(sky, Layer.BACKGROUND);

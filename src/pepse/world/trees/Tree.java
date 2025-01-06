@@ -1,15 +1,10 @@
 package src.pepse.world.trees;
 
 import danogl.GameObject;
-import danogl.components.Component;
 import danogl.components.GameObjectPhysics;
-import danogl.components.ScheduledTask;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.world.JumpObserver;
 
-import java.awt.*;
 
 public class Tree extends GameObject{
     private static final String TREE_TAG = "tree";

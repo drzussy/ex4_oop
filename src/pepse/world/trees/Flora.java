@@ -6,7 +6,6 @@ import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.util.ColorSupplier;
 import src.pepse.world.Block;
 
 import java.awt.*;

@@ -117,7 +117,7 @@ public class Avatar extends GameObject {
      public void addJumpObserver (JumpObserver obs) {
         this.jumpObservers.add(obs);
      }
-    public void removeJumpObserver (JumpObserver obs) {
-        this.jumpObservers.remove(obs);
-    }
+//    public void removeJumpObserver (JumpObserver obs) {
+//        this.jumpObservers.remove(obs);
+//    }
 }
