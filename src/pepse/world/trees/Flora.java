@@ -1,7 +1,6 @@
 package src.pepse.world.trees;
 
 import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -21,8 +20,10 @@ public class Flora {
     public static final String LEAF_TAG = "leaf";
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
-    private static final int CANOPY_HEIGHT = 5;
-    private static final int CANOPY_WIDTH = 7;
+    private static final int MAX_CANOPY_HEIGHT = 10;
+    private static final int MAX_CANOPY_WIDTH = 7;
+    private static final int MIN_CANOPY_HEIGHT = 4;
+    private static final int MIN_CANOPY_WIDTH = 3;
     private static final Color TREE_TRUNK_COLOR = new Color(124, 51, 10);
     private static final int TREE_COLOR_DELTA = 50;
     private static final Color LEAF_COLOR = new Color(76, 253, 52);
@@ -32,8 +33,8 @@ public class Flora {
     private static final float LEAF_CYCLE_LENGTH = 2F;
     private static final float LEAF_WIND_WIDTH_FACTOR = 0.75f;
     private static final float LEAF_WIND_HEIGHT_FACTOR = 0.95f;
-    private static final float FRUIT_CHANCE = 0.1f;
-    private final Random random;
+    private static final float FRUIT_CHANCE = 0.05f;
+    private static final float TREE_CHANCE = 0.1f;
     private final Function<Float, Float> getGroundHeightAt;
     private final int seed;
 
@@ -43,22 +44,18 @@ public class Flora {
     public Flora(int seed, Function<Float, Float> getGroundHeightAt,
                  BiFunction<String, Boolean, Renderable> readImage) {
         this.seed = seed;
-        this.random = new Random(seed);
         this.getGroundHeightAt = getGroundHeightAt;
         this.pineappleImage = readImage.apply(pathToPineappleImage, true);
     }
 
-    private int treeHeightAtInBlocks (float x) {
-        Random tempRand = new Random(Objects.hash(x, seed));
-        return tempRand.nextInt(MIN_TREE_HEIGHT, MAX_TREE_HEIGHT+1);
-    }
 
     public Map<Tree, List<GameObject>> createInRange(int minX, int maxX){
         Map<Tree, List<GameObject>> map = new HashMap<>();
         minX = ((minX + Block.SIZE - 1) / Block.SIZE) * Block.SIZE;
         maxX = (maxX / Block.SIZE) * Block.SIZE;
-        for (float x = minX; x < maxX; x=x+Block.SIZE) {
-            if (random.nextFloat()<0.2f) { // create tree for 20% of blocks
+        for (float x = minX; x <= maxX; x=x+Block.SIZE) {
+            Random random = new Random(Objects.hash(x, seed));
+            if (random.nextFloat()<=TREE_CHANCE) { // create tree for 20% of blocks
                 Tree tree = generateTree(x);
                 ArrayList<GameObject> leafList = generateLeaves(x, tree.getTopLeftCorner());
                 map.put(tree, leafList);
@@ -76,19 +73,27 @@ public class Flora {
         return new Tree (treeTopLeftCorner, treeSize, treeRender);
     }
 
+    private int treeHeightAtInBlocks (float x) {
+        Random tempRand = new Random(Objects.hash(x, seed));
+        return tempRand.nextInt(MIN_TREE_HEIGHT, MAX_TREE_HEIGHT+1);
+    }
+
     private ArrayList<GameObject> generateLeaves(float x, Vector2 treeTopLeftCorner) {
         ArrayList<GameObject> foliageList = new ArrayList<>();
-        Random tempRand = new Random(Objects.hash(x, seed));
-        float rightShift = (float) (CANOPY_WIDTH-1)*Block.SIZE/2;
-        float downShift = (float) (CANOPY_HEIGHT*Block.SIZE)/2;
+        Random random = new Random(Objects.hash(x, seed));
+        int canopyHeight = random.nextInt(MIN_CANOPY_HEIGHT, MAX_CANOPY_HEIGHT+1);
+        int canopyWidth = random.nextInt(MIN_CANOPY_WIDTH, MAX_CANOPY_WIDTH+1);
+        float rightShift = (float) (canopyWidth -1)*Block.SIZE/2;
+        float downShift = (float) (canopyHeight *Block.SIZE)/2;
         Renderable leafRender = new RectangleRenderable(
                 ColorSupplier.approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA));
-        for (int row=0; row<CANOPY_HEIGHT; row++) {
-            for (int col=0; col<CANOPY_WIDTH; col++) {
-                if (tempRand.nextFloat()<LEAF_CHANCE) {
+        for (int row = 0; row< canopyHeight; row++) {
+            for (int col = 0; col< canopyWidth; col++) {
+                if (random.nextFloat()<LEAF_CHANCE) {
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
                             col*Block.SIZE- rightShift, row*Block.SIZE- downShift));
                     Block leaf = new Block(leafTopLeft, leafRender);
+                    leaf.setTag(LEAF_TAG);
                     Runnable createLeafTransitions = () -> {
                         new Transition<>(leaf,
                                 leaf.renderer()::setRenderableAngle,
@@ -107,11 +112,10 @@ public class Flora {
                                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                                 null);
                     };
-                    float delayTime = tempRand.nextFloat()*2;
+                    float delayTime = random.nextFloat()*2;
                     new ScheduledTask(leaf, delayTime, false, createLeafTransitions);
-                    leaf.setTag(LEAF_TAG);
                     foliageList.add(leaf);
-                } else if (tempRand.nextFloat() < FRUIT_CHANCE) {
+                } else if (random.nextFloat() < FRUIT_CHANCE) {
 //                    Renderable fruitRenderable = new OvalRenderable(getRandomBrightColor(tempRand));
 //                    Renderable fruitRenderable = new ImageRenderable();
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
@@ -125,14 +129,12 @@ public class Flora {
         }
         return foliageList;
     }
-
-    private static Color getRandomBrightColor(Random random) {
-        // Ensure at least one component (R, G, B) is high
-        int r = random.nextInt(156) + 100; // Random value between 100 and 255
-        int g = random.nextInt(156) + 100; // Random value between 100 and 255
-        int b = random.nextInt(156); // Random value between 0 and 155
-
-        return new Color(r, g, b);
-    }
-
+//    private static Color getRandomBrightColor(Random random) {
+//        // Ensure at least one component (R, G, B) is high
+//        int r = random.nextInt(156) + 100; // Random value between 100 and 255
+//        int g = random.nextInt(156) + 100; // Random value between 100 and 255
+//        int b = random.nextInt(156); // Random value between 0 and 155
+//
+//        return new Color(r, g, b);
+//    }
 }
