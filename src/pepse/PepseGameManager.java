@@ -3,6 +3,7 @@ package src.pepse;
 import danogl.Tools;
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.Camera;
+import danogl.gui.rendering.Renderable;
 import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
@@ -70,7 +71,7 @@ public class PepseGameManager extends GameManager{
         minLoadedX = (int) (-CHUNK_SIZE);
         maxLoadedX = (int) ((windowWidth/Block.SIZE)*Block.SIZE+CHUNK_SIZE);
 
-        createBackgroundObjects();
+        createBackgroundObjects(imageReader);
 
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
@@ -84,6 +85,19 @@ public class PepseGameManager extends GameManager{
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
         gameObjects.addGameObject(avatar);
         avatar.setTag(AVATAR_TAG);
+
+        // cloud creation
+        Cloud cloud = new Cloud(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
+                CLOUD_DIMENSIONS,
+                windowDimensions,
+                gameObjects::addGameObject, gameObjects::removeGameObject, imageReader::readImage);
+        List<GameObject> cloudList = cloud.create();
+        if (cloud!=null) {
+            for (GameObject cloudBlock : cloudList) {
+                gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
+            }
+        }
+        avatar.addJumpObserver(cloud);
 
         // Create energy display
         Supplier<Double> callback = avatar::getEnergy;
@@ -100,7 +114,7 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions()));
     }
 
-    private void createBackgroundObjects() {
+    private void createBackgroundObjects(ImageReader imageReader) {
         //initialize sky background and set to layer
         GameObject sky = Sky.create(windowDimensions);
         gameObjects.addGameObject(sky, Layer.BACKGROUND);
@@ -116,14 +130,7 @@ public class PepseGameManager extends GameManager{
         GameObject sunHalo = SunHalo.create(sun);
         gameObjects.addGameObject(sunHalo, Layer.BACKGROUND);
 
-        // cloud creation
-        List<GameObject> cloud = Cloud.create(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
-                CLOUD_DIMENSIONS, windowDimensions);
-        if (cloud!=null) {
-            for (GameObject cloudBlock : cloud) {
-                gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
-            }
-        }
+
     }
 
     @Override
@@ -146,6 +153,11 @@ public class PepseGameManager extends GameManager{
                 gameObjects.removeGameObject(obj, LEAF_LAYER); // Removes only leaves
                 gameObjects.removeGameObject(obj, FRUIT_LAYER); // Removes only fruit
                 gameObjects.removeGameObject(obj, Layer.STATIC_OBJECTS); // removes only trees and ground
+            }
+            if(obj.getTag().equals(Raindrop.RAIN_TAG)){
+                if(obj.renderer().getOpaqueness() ==0) {
+                    gameObjects.removeGameObject(obj);
+                }
             }
         }
     }

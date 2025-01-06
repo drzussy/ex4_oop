@@ -2,10 +2,9 @@ package src.pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
-import danogl.components.Component;
-import danogl.components.SwitchComponent;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import src.pepse.util.ColorSupplier;
 
@@ -13,15 +12,29 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BooleanSupplier;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
-public class Cloud {
+public class Cloud implements JumpObserver{
+
     private static final Color CLOUD_COLOR = new Color(149, 166, 166, 128);
     private static final float CLOUD_SPEED = 300;
     private static final float CLOUD_BLOCK_CHANCE = 0.8f;
     private static final int CLOUD_COLOR_DELTA = 20;
     private static final float CLOUD_CYCLE_TIME = 5;
     private static final float CLOUD_BUFFER = 0.1F;
+    public static final int NUMBER_OF_RAINDROPS = 10;
+    public static final int RAINDROP_CHANCES = 3;
+    public static final String RAINDROP_PATH = "assets/raindrop.png";
+    public static String Tag = "cloud";
+    private final Vector2 topLeftCorner;
+    private final Vector2 dimensions;
+    private final Vector2 windowDimensions;
+    private final Consumer<GameObject> gameObjectsAdd;
+    private final BiFunction<String, Boolean, Renderable> imageReader;
+    private final Consumer<GameObject> gameObjectsRemove;
+    private List<GameObject> cloudList;
+//    private static ArrayList<GameObject> raindropList;
 
     /**
      * Construct a new cloud.
@@ -31,7 +44,22 @@ public class Cloud {
      * @param windowDimensions The game window dimensions,
      *                         used for resetting the cloud when it goes out-of-bounds.
      */
-    public static List<GameObject> create (Vector2 topLeftCorner, Vector2 dimensions, Vector2 windowDimensions) {
+    public Cloud(Vector2 topLeftCorner,
+                 Vector2 dimensions,
+                 Vector2 windowDimensions,
+                 Consumer<GameObject> gameObjectsAdd,
+                 Consumer<GameObject> gameObjectsRemove,
+                 BiFunction<String, Boolean,
+                             Renderable > readImage){
+        this.topLeftCorner = topLeftCorner;
+        this.dimensions = dimensions;
+        this.windowDimensions = windowDimensions;
+        this.gameObjectsAdd = gameObjectsAdd;
+        this.gameObjectsRemove = gameObjectsRemove;
+        this.imageReader = readImage;
+    }
+    public List<GameObject> create () {
+
         int cloudWidth = (int) (dimensions.x()/Block.SIZE);
         int cloudHeight = (int) (dimensions.y()/Block.SIZE);
         List<GameObject> cloudList = new ArrayList<>();
@@ -56,8 +84,12 @@ public class Cloud {
                 }
             }
         }
+        this.cloudList = cloudList;
         return cloudList;
     }
+
+
+
     private static List<List<Boolean>> generateCloud (int width, int height) {
         if (width<=0 || height<=0) return null;
         Random random = new Random();
@@ -70,5 +102,22 @@ public class Cloud {
             cloudSpotsToFill.add(cloudRow);
         }
         return cloudSpotsToFill;
+    }
+
+
+
+    @Override
+    public void notifyAboutJump() {
+        //cause rainblocks to fall
+        Random random = new Random();
+        Renderable raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
+        for(GameObject cloudBlock: cloudList)
+            if(random.nextInt(10) < RAINDROP_CHANCES){
+//                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
+                Raindrop raindrop = new Raindrop(cloudBlock.getCenter(), raindropRenderable);
+//                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+                gameObjectsAdd.accept(raindrop);
+
+            }
     }
 }
