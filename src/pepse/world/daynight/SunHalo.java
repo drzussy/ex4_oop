@@ -8,7 +8,7 @@ import danogl.util.Vector2;
 import java.awt.*;
 
 public class SunHalo {
-    public static final Color HALO_COLOR = new Color(255, 255, 0, 20);
+    public static final Color HALO_COLOR = new Color(255, 255, 0, 60);
     private static final Vector2 HALO_BUFFER = new Vector2(20, 20);
     public static final String SUN_HALO_TAG = "sunHalo";
 
