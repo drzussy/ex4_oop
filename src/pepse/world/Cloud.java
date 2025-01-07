@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public class Cloud implements JumpObserver{
 
     public static final String ASSETS_ALIEN_PNG = "assets/alien.png";
-    private static final float CLOUD_BLOCK_CHANCE = 0.8f;
+    private static final float CLOUD_BLOCK_CHANCE = 0.6f;
     private static final float CLOUD_CYCLE_TIME = 5;
     private static final float CLOUD_BUFFER = 0.1F;
     public static final int RAINDROP_CHANCES = 3;
