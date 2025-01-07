@@ -26,6 +26,7 @@ public class Cloud implements JumpObserver{
     private final Consumer<GameObject> gameObjectsAdd;
     private final BiFunction<String, Boolean, Renderable> imageReader;
     private final Consumer<GameObject> gameObjectsRemove;
+    private final Renderable raindropRenderable;
     private List<GameObject> cloudList;
 
     /**
@@ -49,6 +50,7 @@ public class Cloud implements JumpObserver{
         this.gameObjectsAdd = gameObjectsAdd;
         this.gameObjectsRemove = gameObjectsRemove;
         this.imageReader = readImage;
+        this.raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
     }
     public List<GameObject> create () {
 
@@ -103,7 +105,6 @@ public class Cloud implements JumpObserver{
     public void notifyAboutJump() {
         //cause raindrops to fall
         Random random = new Random();
-        Renderable raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
         for(GameObject cloudBlock: cloudList)
             if(random.nextInt(10) < RAINDROP_CHANCES){
 //                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
