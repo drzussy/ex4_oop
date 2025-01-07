@@ -59,6 +59,7 @@ public class Cloud implements JumpObserver{
         List<GameObject> cloudList = new ArrayList<>();
         List<List<Boolean>> cloudShape = generateCloud(cloudWidth, cloudHeight);
         if (cloudShape==null) return null;
+        Renderable cloudRenderable =  imageReader.apply(ASSETS_ALIEN_PNG, true);
         for (int row = 0; row<cloudHeight; row++) {
             List<Boolean> cloudRow = cloudShape.get(row);
             for (int col = 0; col<cloudWidth; col++) {
@@ -67,7 +68,7 @@ public class Cloud implements JumpObserver{
                     Vector2 cloudTopLeft = topLeftCorner.add(new Vector2(col, row).mult(Block.SIZE));
 //                    Block cloud = new Block(cloudTopLeft, new RectangleRenderable(
 //                            ColorSupplier.approximateColor(CLOUD_COLOR, CLOUD_COLOR_DELTA)));
-                    Block cloud = new Block(cloudTopLeft, imageReader.apply(ASSETS_ALIEN_PNG, true));
+                    Block cloud = new Block(cloudTopLeft,cloudRenderable);
                     cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                     new Transition<>(cloud, (Float x)->cloud.transform().setTopLeftCornerX(x),
                             windowDimensions.x()*(-2*CLOUD_BUFFER)+rightShift,
