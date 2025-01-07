@@ -69,13 +69,15 @@ public class PepseGameManager extends GameManager{
         minLoadedX = (int) (-CHUNK_SIZE);
         maxLoadedX = (int) ((windowWidth/Block.SIZE)*Block.SIZE+CHUNK_SIZE);
 
+        // Collision optimization
+        optimizeLayerCollisions();
+
         createBackgroundObjects();
 
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
         flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage, AVATAR_TAG);
         loadWorld(minLoadedX, maxLoadedX);
-        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
 
         // avatar initialization
         float middle_x = (float) (windowDimensions.x()* MIDDLE);
@@ -101,7 +103,7 @@ public class PepseGameManager extends GameManager{
         Supplier<Double> callback = avatar::getEnergy;
         gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
 
-        // TODO - remove this
+        // TODO - remove this once we're sure the randomly generated trees are consistent
         Supplier<Double> locationCallback = () -> (double) avatar.getCenter().x();
         gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth-(5*DISPLAY_DIMENSIONS.x()), 0),
                 DISPLAY_DIMENSIONS, locationCallback), Layer.UI);
@@ -110,6 +112,15 @@ public class PepseGameManager extends GameManager{
         setCamera(new Camera(avatar, cameraPosition,
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions()));
+    }
+
+    private void optimizeLayerCollisions() {
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
+        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, LEAF_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, FRUIT_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(LEAF_LAYER, LEAF_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(LEAF_LAYER, FRUIT_LAYER, false);
     }
 
     private void createBackgroundObjects() {
