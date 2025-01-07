@@ -42,7 +42,7 @@ public class Raindrop extends GameObject {
         super.update(deltaTime);
         if(renderer().getOpaqueness()==0){
             gameObjectsRemove.accept(this);
-            System.out.println("raindrop offed itself");
+            System.out.println("raindrop offed itself"); // TODO: delete this line
         }
     }
 }
