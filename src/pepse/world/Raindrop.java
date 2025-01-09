@@ -1,8 +1,6 @@
 package src.pepse.world;
 
-import danogl.GameManager;
 import danogl.GameObject;
-import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
