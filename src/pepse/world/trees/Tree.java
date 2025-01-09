@@ -4,13 +4,13 @@ import danogl.GameObject;
 import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-
 import static src.pepse.util.PepseConstants.TREE_TAG;
 
-
+/**
+ * A class representing a tree in-game.
+ * Has nothing interesting about it except that it blocks all intersections and is immovable.
+ */
 public class Tree extends GameObject{
-
-
     /**
      * Construct a new Tree. Receives all of its parameters from Flora.
      *

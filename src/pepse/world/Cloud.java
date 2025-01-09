@@ -9,27 +9,31 @@ import danogl.util.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static src.pepse.util.PepseConstants.BLOCK_SIZE;
+import static src.pepse.util.PepseConstants.LEAF_AND_RAIN_LAYER;
 
+/**
+ * A class for creating a cloud, which moves across the camera and causes rain when the avatar jumps.
+ * Implements JumpObserver as part of the Observer design pattern.
+ */
 public class Cloud implements JumpObserver{
-
-    public static final String ASSETS_ALIEN_PNG = "assets/alien.png";
+    private static final String PATH_TO_CLOUD_BLOCK_IMAGE = "assets/alien.png";
+    private static final String PATH_TO_RAINDROP_IMAGE = "assets/laser.png";
     private static final float CLOUD_BLOCK_CHANCE = 0.6f;
-    private static final float CLOUD_CYCLE_TIME = 5;
+    private static final float CLOUD_CYCLE_TIME = 15;
     private static final float CLOUD_BUFFER = 0.1F;
-    public static final int RAINDROP_CHANCES = 3;
-    public static final String RAINDROP_PATH = "assets/laser.png";
+    private static final float RAINDROP_CHANCES = 0.2F;
     private final Vector2 topLeftCorner;
     private final Vector2 dimensions;
     private final Vector2 windowDimensions;
-    private final Consumer<GameObject> gameObjectsAdd;
     private final BiFunction<String, Boolean, Renderable> imageReader;
-    private final Consumer<GameObject> gameObjectsRemove;
+    private final BiConsumer<GameObject, Integer> gameObjectsAdd;
+    private final BiConsumer<GameObject, Integer> gameObjectsRemove;
     private final Renderable raindropRenderable;
-    private List<GameObject> cloudList;
+    private List<Block> cloudList;
 
     /**
      * Construct a new cloud.
@@ -38,38 +42,46 @@ public class Cloud implements JumpObserver{
      * @param dimensions    Width and height in window coordinates.
      * @param windowDimensions The game window dimensions,
      *                         used for resetting the cloud when it goes out-of-bounds.
+     * @param gameObjectsAdd    A callback to the method used for adding GameObjects to the game.
+     *                          Used to create raindrops.
+     * @param gameObjectsRemove A callback to the method used for removing GameObjects from the game.
+     *                          Passed to the created raindrops to enable their self-destruct.
+     * @param readImage         A callback to the method used to create ImageRenderables from files.
      */
     public Cloud(Vector2 topLeftCorner,
                  Vector2 dimensions,
                  Vector2 windowDimensions,
-                 Consumer<GameObject> gameObjectsAdd,
-                 Consumer<GameObject> gameObjectsRemove,
-                 BiFunction<String, Boolean,
-                             Renderable > readImage){
+                 BiConsumer<GameObject, Integer> gameObjectsAdd,
+                 BiConsumer<GameObject, Integer> gameObjectsRemove,
+                 BiFunction<String, Boolean, Renderable > readImage){
         this.topLeftCorner = topLeftCorner;
         this.dimensions = dimensions;
         this.windowDimensions = windowDimensions;
         this.gameObjectsAdd = gameObjectsAdd;
         this.gameObjectsRemove = gameObjectsRemove;
         this.imageReader = readImage;
-        this.raindropRenderable = imageReader.apply (RAINDROP_PATH, true);
+        this.raindropRenderable = imageReader.apply (PATH_TO_RAINDROP_IMAGE, true);
     }
-    public List<GameObject> create () {
 
+    /**
+     * Creates a new cloud, which is returned as a list of blocks. This list is saved as a field,
+     * and is used to generate raindrops. Only the last cloud created with this method will cause rainfall!
+     *
+     * @return A list of blocks which constitute the cloud.
+     */
+    public List<Block> create () {
         int cloudWidth = (int) (dimensions.x()/BLOCK_SIZE);
         int cloudHeight = (int) (dimensions.y()/BLOCK_SIZE);
-        List<GameObject> cloudList = new ArrayList<>();
+        List<Block> cloudList = new ArrayList<>();
         List<List<Boolean>> cloudShape = generateCloud(cloudWidth, cloudHeight);
         if (cloudShape==null) return null;
-        Renderable cloudRenderable =  imageReader.apply(ASSETS_ALIEN_PNG, true);
+        Renderable cloudRenderable =  imageReader.apply(PATH_TO_CLOUD_BLOCK_IMAGE, true);
         for (int row = 0; row<cloudHeight; row++) {
             List<Boolean> cloudRow = cloudShape.get(row);
             for (int col = 0; col<cloudWidth; col++) {
                 if (cloudRow.get(col)) {
                     float rightShift = col*BLOCK_SIZE;
                     Vector2 cloudTopLeft = topLeftCorner.add(new Vector2(col, row).mult(BLOCK_SIZE));
-//                    Block cloud = new Block(cloudTopLeft, new RectangleRenderable(
-//                            ColorSupplier.approximateColor(CLOUD_COLOR, CLOUD_COLOR_DELTA)));
                     Block cloud = new Block(cloudTopLeft,cloudRenderable);
                     cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                     new Transition<>(cloud, (Float x)->cloud.transform().setTopLeftCornerX(x),
@@ -86,8 +98,6 @@ public class Cloud implements JumpObserver{
         return cloudList;
     }
 
-
-
     private static List<List<Boolean>> generateCloud (int width, int height) {
         if (width<=0 || height<=0) return null;
         Random random = new Random();
@@ -102,22 +112,21 @@ public class Cloud implements JumpObserver{
         return cloudSpotsToFill;
     }
 
-
-
+    /**
+     * Allows notifying the cloud that the avatar has jumped, meaning it should cause rainfall,
+     * as part of the Observer design pattern.
+     */
     @Override
     public void notifyAboutJump() {
-        //cause raindrops to fall
+        // Randomly select cloud blocks from which raindrops will fall
         Random random = new Random();
         for(GameObject cloudBlock: cloudList)
-            if(random.nextInt(10) < RAINDROP_CHANCES){
-//                cloudBlock.setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
+            if(random.nextFloat() < RAINDROP_CHANCES){
                 Raindrop raindrop =
                         new Raindrop(cloudBlock.getCenter(),
                         raindropRenderable,
                                 gameObjectsRemove);
-//                cloudBlock.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-                gameObjectsAdd.accept(raindrop);
-
+                gameObjectsAdd.accept(raindrop, LEAF_AND_RAIN_LAYER);
             }
     }
 }

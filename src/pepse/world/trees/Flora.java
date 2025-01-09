@@ -17,8 +17,7 @@ import java.util.function.Function;
 import static src.pepse.util.PepseConstants.*;
 
 public class Flora {
-
-    private final String avatarTag;
+    private static final String PATH_TO_FRUIT_IMAGE = "assets/pineapple.png";
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
     private static final int MAX_CANOPY_HEIGHT = 13;
@@ -27,8 +26,8 @@ public class Flora {
     private static final int MIN_CANOPY_WIDTH = 3;
     private static final Color TREE_TRUNK_COLOR = new Color(124, 51, 10);
     private static final int TREE_COLOR_DELTA = 50;
-    private static final Color LEAF_COLOR = new Color(76, 253, 52);
-    private static final int LEAF_COLOR_DELTA = 60;
+    private static final Color LEAF_COLOR = new Color(21, 84, 12);
+    private static final int LEAF_COLOR_DELTA = 50;
     private static final float LEAF_CHANCE = 0.6F;
     private static final float LEAF_MAX_ANGLE = 45F;
     private static final float LEAF_CYCLE_LENGTH = 2F;
@@ -38,16 +37,13 @@ public class Flora {
     private static final float TREE_CHANCE = 0.1f;
     private final Function<Float, Float> getGroundHeightAt;
     private final int seed;
-
-    private final Renderable pineappleImage;
-    private static final String pathToPineappleImage = "assets/pineapple.png";
+    private final Renderable fruitImage;
 
     public Flora(int seed, Function<Float, Float> getGroundHeightAt,
-                 BiFunction<String, Boolean, Renderable> readImage, String avatarTag) {
+                 BiFunction<String, Boolean, Renderable> readImage) {
         this.seed = seed;
         this.getGroundHeightAt = getGroundHeightAt;
-        this.pineappleImage = readImage.apply(pathToPineappleImage, true);
-        this.avatarTag = avatarTag;
+        this.fruitImage = readImage.apply(PATH_TO_FRUIT_IMAGE, true);
     }
 
 
@@ -80,13 +76,14 @@ public class Flora {
         return tempRand.nextInt(MIN_TREE_HEIGHT, MAX_TREE_HEIGHT+1);
     }
 
+    // Helper method for creating leaves around a particular tree.
     private ArrayList<GameObject> generateLeaves(float x, Vector2 treeTopLeftCorner) {
         ArrayList<GameObject> foliageList = new ArrayList<>();
         Random random = new Random(Objects.hash(x, seed));
         int canopyHeight = random.nextInt(MIN_CANOPY_HEIGHT, MAX_CANOPY_HEIGHT+1);
         int canopyWidth = random.nextInt(MIN_CANOPY_WIDTH, MAX_CANOPY_WIDTH+1);
-        float rightShift = (float) (canopyWidth -1)*BLOCK_SIZE/2;
-        float downShift = (float) (canopyHeight *BLOCK_SIZE)/2;
+        float rightShift = canopyWidth/2f*BLOCK_SIZE;
+        float downShift = canopyHeight/2f*BLOCK_SIZE;
         Renderable leafRender = new RectangleRenderable(
                 approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
         for (int row = 0; row< canopyHeight; row++) {
@@ -117,10 +114,11 @@ public class Flora {
                     float delayTime = random.nextFloat()*2;
                     new ScheduledTask(leaf, delayTime, false, createLeafTransitions);
                     foliageList.add(leaf);
-                } if (random.nextFloat() < FRUIT_CHANCE) {
+                }
+                if (random.nextFloat() < FRUIT_CHANCE) { // Create a fruit
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
                             col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
-                    Fruit fruit = new Fruit(leafTopLeft, pineappleImage, avatarTag);
+                    Fruit fruit = new Fruit(leafTopLeft, fruitImage);
                     fruit.setTag(FRUIT_TAG);
                     foliageList.add(fruit);
                 }
@@ -129,6 +127,11 @@ public class Flora {
         return foliageList;
     }
 
+    /*
+        We altered these methods, copied from ColorSupplier, so we could seed the randomness
+        and have the trees be consistently re-generated,
+        even with regard to color (and not just position and height) .
+     */
     private Color approximateColor(Color baseColor, int colorDelta, Random random) {
         return new Color(
                 randomChannelInRange(baseColor.getRed()-colorDelta, baseColor.getRed()+colorDelta,

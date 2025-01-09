@@ -15,10 +15,10 @@ import static src.pepse.util.PepseConstants.BLOCK_SIZE;
  * this class does not extend gameObject, and only creates Block objects (which do extend GameObject)
  */
 public class Terrain {
-    public static final int DEFAULT_DEPTH = 20;
+    private static final int DEFAULT_DEPTH = 20;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final float DEFAULT_PART_OF_SCREEN_TO_FILL = ((float)2)/3;
-    public static final int NOISE_FACTOR = 7;
+    private static final int NOISE_FACTOR = 7;
     private final int groundHeightAtX0;
     private final NoiseGenerator noiseGenerator;
 

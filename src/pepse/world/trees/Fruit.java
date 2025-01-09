@@ -5,26 +5,20 @@ import danogl.collisions.Collision;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.util.PepseConstants;
 import src.pepse.world.Avatar;
 
 import static src.pepse.util.PepseConstants.*;
 
 
 public class Fruit extends GameObject {
-
-
-    public static final int DOUBLE = 2;
-    private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE+1, DOUBLE *BLOCK_SIZE);
+    private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE*0.75f, BLOCK_SIZE*1.25f);
     private static final int FRUIT_ENERGY_BONUS = 20;
     private static final float FRUIT_RESPAWN_DELAY = DAY_CYCLE_LENGTH;
-    private final String avatarTag;
     private boolean collidable = true;
     Renderable fruitImage;
 
-    public Fruit(Vector2 topLeftCorner, Renderable renderable, String avatarTag) {
+    public Fruit(Vector2 topLeftCorner, Renderable renderable) {
         super(topLeftCorner, FRUIT_SIZE ,renderable);
-        this.avatarTag = avatarTag;
         this.setTag(FRUIT_TAG);
         this.fruitImage = renderable;
     }
@@ -51,7 +45,11 @@ public class Fruit extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (!other.getTag().equals(avatarTag)) return;
+        if (other.getTag().equals(TREE_TAG)) {
+            despawnFruit();
+            return;
+        }
+        if (!other.getTag().equals(AVATAR_TAG)) return;
         Avatar avatar = (Avatar) other;
         avatar.changeEnergy(FRUIT_ENERGY_BONUS);
         despawnFruit();

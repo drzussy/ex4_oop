@@ -1,7 +1,9 @@
 package src.pepse;
 
 import danogl.collisions.GameObjectCollection;
+import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Camera;
+import danogl.gui.rendering.OvalRenderable;
 import src.pepse.world.*;
 import src.pepse.world.daynight.Night;
 import danogl.GameManager;
@@ -12,34 +14,32 @@ import danogl.util.Vector2;
 import src.pepse.world.daynight.*;
 import src.pepse.world.trees.*;
 
-import java.awt.event.KeyEvent;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static src.pepse.util.PepseConstants.*;
 
+/**
+ * The game manager for our PEPSE. Initializes the game and makes sure to load and unload additional world
+ * chunks when and where needed.
+ */
 public class PepseGameManager extends GameManager{
-
-
-    public static final double MIDDLE = 0.5f;
-    public static final int PLACEMENT_BUFFER = 4 * BLOCK_SIZE;
+    private static final double MIDDLE = 0.5f;
+    private static final int PLACEMENT_BUFFER = 4 * BLOCK_SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
-    private static final int LEAF_LAYER = 50;
-    private static final int FRUIT_LAYER = 51;
-    private static final int CHUNK_SIZE = 1500;
+    private static final int CHUNK_SIZE = BLOCK_SIZE*25;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
-    private UserInputListener inputListener;
-    private WindowController windowController;
+    private GameObjectCollection gameObjects;
     private Avatar avatar;
     private Terrain terrain;
     private Flora flora;
     private Vector2 windowDimensions;
     private int minLoadedX;
     private int maxLoadedX;
-    private GameObjectCollection gameObjects;
-
 
     public static void main(String[] args){
         new PepseGameManager().run();
@@ -56,72 +56,61 @@ public class PepseGameManager extends GameManager{
      *                         concerning the window.
      */
     @Override
-    public void initializeGame(ImageReader imageReader,
-                               SoundReader soundReader,
-                               UserInputListener inputListener,
-                               WindowController windowController) {
+    public void initializeGame(ImageReader imageReader, SoundReader soundReader,
+                               UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.gameObjects = gameObjects();
-        this.windowController = windowController;
-        this.inputListener = inputListener;
-        windowController.setTargetFramerate(60);
+        windowController.setTargetFramerate(30);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
-        minLoadedX = (int) (-CHUNK_SIZE);
-        maxLoadedX = (int) ((windowWidth/ BLOCK_SIZE)* BLOCK_SIZE +CHUNK_SIZE);
-
+        minLoadedX = -CHUNK_SIZE;
+        maxLoadedX = (int) (CHUNK_SIZE + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
         // Collision optimization
         optimizeLayerCollisions();
-
+        // Create background objects - sky, sun & halo, nighttime
         createBackgroundObjects();
-
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
-        flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage, AVATAR_TAG);
+        flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage);
         loadWorld(minLoadedX, maxLoadedX);
-
         // avatar initialization
         float middle_x = (float) (windowDimensions.x()* MIDDLE);
         Vector2 avatarInitialPosition = new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
         gameObjects.addGameObject(avatar);
         avatar.setTag(AVATAR_TAG);
-
         // cloud creation
         Cloud cloud = new Cloud(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
-                CLOUD_DIMENSIONS,
-                windowDimensions,
+                CLOUD_DIMENSIONS, windowDimensions,
                 gameObjects::addGameObject, gameObjects::removeGameObject, imageReader::readImage);
-        List<GameObject> cloudList = cloud.create();
-        if (cloud!=null) {
+        List<Block> cloudList = cloud.create();
+        if (cloudList!=null) {
             for (GameObject cloudBlock : cloudList) {
                 gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
             }
         }
         avatar.addJumpObserver(cloud);
-
         // Create energy display
         Supplier<Double> callback = avatar::getEnergy;
         gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
-
-        // TODO - remove this once we're sure the randomly generated trees are consistent
-        Supplier<Double> locationCallback = () -> (double) avatar.getCenter().x();
-        gameObjects.addGameObject(new EnergyDisplay(new Vector2(windowWidth-(5*DISPLAY_DIMENSIONS.x()), 0),
-                DISPLAY_DIMENSIONS, locationCallback), Layer.UI);
-
+        // Set the camera to follow the game avatar
         Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
         setCamera(new Camera(avatar, cameraPosition,
-                windowController.getWindowDimensions(),
-                windowController.getWindowDimensions()));
+                windowController.getWindowDimensions(), windowController.getWindowDimensions()));
     }
 
+    /*
+        Helper method to nullify specific layer collisions,
+        so fewer collisions are computed and the game runs faster.
+     */
     private void optimizeLayerCollisions() {
-        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_AND_RAIN_LAYER, false);
         gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
-        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, LEAF_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, LEAF_AND_RAIN_LAYER, false);
         gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, FRUIT_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(LEAF_LAYER, LEAF_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(LEAF_LAYER, FRUIT_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, Layer.STATIC_OBJECTS, false);
+        gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, LEAF_AND_RAIN_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, FRUIT_LAYER, false);
     }
 
     private void createBackgroundObjects() {
@@ -131,44 +120,67 @@ public class PepseGameManager extends GameManager{
         // night initialization
         GameObject night = Night.create(windowDimensions, DAY_CYCLE_LENGTH);
         gameObjects.addGameObject(night, Layer.FOREGROUND);
-
-        // sun initialization
+        // sun & halo initialization
         GameObject sun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH);
-        gameObjects.addGameObject(sun, Layer.BACKGROUND);
-
-        // halo initialization
         GameObject sunHalo = SunHalo.create(sun);
+        gameObjects.addGameObject(sun, Layer.BACKGROUND);
         gameObjects.addGameObject(sunHalo, Layer.BACKGROUND);
 
-
+        Runnable createSecondSunAndHalo = () -> {
+            GameObject secondSun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH);
+            GameObject secondSunHalo = SunHalo.create(secondSun);
+            secondSun.renderer().setRenderable(new OvalRenderable(Color.ORANGE));
+            secondSunHalo.renderer().setRenderable(new OvalRenderable(Color.RED));
+            secondSunHalo.renderer().setOpaqueness(0.2f);
+            gameObjects.addGameObject(secondSun, Layer.BACKGROUND);
+            gameObjects.addGameObject(secondSunHalo, Layer.BACKGROUND);
+        };
+        new ScheduledTask(sun, 1.5f, false, createSecondSunAndHalo);
     }
 
+    /**
+     * The update method, used to manage the addition and removal of GameObjects to/from the game.
+     * If the avatar is close to the edge of the loaded world, we load the next chunk (of 25 blocks),
+     * then delete the farthest loaded chunk (from the other side).
+     * @param deltaTime The time, in seconds, that passed since the last invocation.
+     *                  Only passed to super.update() and not directly used by us.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        // TODO: remove the following line
-        if (inputListener.isKeyPressed(KeyEvent.VK_R)) windowController.resetGame();
+        reloadInfiniteWorld();
+        removeGameObjectsOutOfBounds();
+    }
+
+    /* Both processes are handled by maintaining the smallest (furthest to the left) and biggest
+     * (furthest to the right) horizontal coordinates loaded, adjusting them according to the avatar position,
+     * generating the new chunk, and deleting everything not between those two values.
+     */
+    private void reloadInfiniteWorld() {
         if (avatar.getCenter().x()-minLoadedX < CHUNK_SIZE) {
-            loadWorld(minLoadedX-CHUNK_SIZE, minLoadedX);
+            loadWorld(minLoadedX-CHUNK_SIZE, minLoadedX); // Load the world to the left
             minLoadedX -= CHUNK_SIZE;
             maxLoadedX -= CHUNK_SIZE;
         }
         else if (maxLoadedX-avatar.getCenter().x() < CHUNK_SIZE) {
-            loadWorld(maxLoadedX, maxLoadedX+CHUNK_SIZE);
+            loadWorld(maxLoadedX, maxLoadedX+CHUNK_SIZE); // Load the world to the right
             minLoadedX += CHUNK_SIZE;
             maxLoadedX += CHUNK_SIZE;
         }
+    }
+
+    private void removeGameObjectsOutOfBounds() {
         for (GameObject obj : gameObjects) {
             if (obj.getTopLeftCorner().x()<minLoadedX || obj.getTopLeftCorner().x()>maxLoadedX) {
-                gameObjects.removeGameObject(obj, LEAF_LAYER); // Removes only leaves
+                gameObjects.removeGameObject(obj, LEAF_AND_RAIN_LAYER); // Removes only leaves
                 gameObjects.removeGameObject(obj, FRUIT_LAYER); // Removes only fruit
                 gameObjects.removeGameObject(obj, Layer.STATIC_OBJECTS); // removes only trees and ground
             }
-//            if(obj.getTag().equals(Raindrop.RAIN_TAG)){
-//                if(obj.renderer().getOpaqueness() ==0) {
-//                    gameObjects.removeGameObject(obj);
-//                }
-//            }
+            if(obj.getTag().equals(RAIN_TAG)){
+                if(obj.renderer().getOpaqueness() ==0) {
+                    gameObjects.removeGameObject(obj);
+                }
+            }
         }
     }
 
@@ -182,7 +194,7 @@ public class PepseGameManager extends GameManager{
             gameObjects.addGameObject(tree, Layer.STATIC_OBJECTS);
             List<GameObject> treeLeavesAndFruit = treeList.get(tree);
             for (GameObject obj : treeLeavesAndFruit) {
-                if (obj.getTag().equals(LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_LAYER);
+                if (obj.getTag().equals(LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_AND_RAIN_LAYER);
                 else if (obj.getTag().equals(FRUIT_TAG)) gameObjects.addGameObject(obj,FRUIT_LAYER);
                 else gameObjects.addGameObject(obj, Layer.STATIC_OBJECTS);
             }

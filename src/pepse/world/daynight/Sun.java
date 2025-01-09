@@ -10,15 +10,22 @@ import java.awt.*;
 
 import static src.pepse.util.PepseConstants.SUN_TAG;
 
+/**
+ * A class for creating a Sun object.
+ */
 public class Sun {
-
-
     private static final float HORIZON_RATIO =2f/3;
     private static final float FULL_ROTATION_DEGREES = 360f;
     private static final float DIMENSIONS_CENTER = 0.5f;
     private static final int SUN_SIZE = 50;
-    public static final float HEIGHT_AT_ZENITH = 1f / 3;
+    private static final float HEIGHT_AT_ZENITH = 1f / 3;
 
+    /** A static method for creating a sun GameObject, which will orbit the center of the screen
+     * (moving with the character).
+     * @param windowDimensions The dimensions of the game window, around which the sun revolves.
+     * @param cycleLength The length of a day/night cycle.
+     * @return The sun GameObject, which already handles day/night rotation.
+     */
     public static GameObject create(Vector2 windowDimensions, float cycleLength){
         Vector2 initialSunCenter = new Vector2(windowDimensions.x()*DIMENSIONS_CENTER,
                 windowDimensions.y()* HEIGHT_AT_ZENITH);

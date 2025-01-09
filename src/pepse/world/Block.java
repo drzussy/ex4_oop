@@ -8,10 +8,10 @@ import danogl.util.Vector2;
 import static src.pepse.util.PepseConstants.BLOCK_TAG;
 import static src.pepse.util.PepseConstants.BLOCK_SIZE;
 
+/**
+ * A basic, square GameObject block. Used in the terrain, in leaves, and in cloud parts.
+ */
 public class Block  extends GameObject {
-
-
-
     /**
      * this class is a block of constant size (SIZE*SIZE) which is immovable and does not allow for any other
      * GameObject to pass through it, should a collision between them be wanted by either.

@@ -4,16 +4,17 @@ import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
-
 import java.util.function.Supplier;
 
+/**
+ * A display GameObject, intended for displaying the current energy of the avatar.
+ */
 public class EnergyDisplay extends GameObject {
-
-    public static final String FULL_HEALTH = "100";
+    private static final String FULL_HEALTH = "100";
     private final Supplier<Double> callback;
 
     /**
-     * Construct a new HealthDisplay instance.
+     * Construct a new EnergyDisplay instance.
      *
      * @param topLeftCorner Position of the display, in window coordinates (pixels).
      *                      Note: this will stay constant with respect to the camera.
@@ -27,6 +28,11 @@ public class EnergyDisplay extends GameObject {
         setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
     }
 
+    /**
+     * The update method which makes sure the energy display correctly reflects the avatar's energy level.
+     * @param deltaTime The time elapsed, in seconds, since the last frame.
+     *                  Used only by the super.update() method, and not here.
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
