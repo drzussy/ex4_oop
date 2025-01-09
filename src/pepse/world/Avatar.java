@@ -32,8 +32,8 @@ public class Avatar extends GameObject {
     private final AnimationRenderable runningAnimation;
     private final List<JumpObserver> jumpObservers = new ArrayList<>();
     private static final float WALKING_SPEED = 300;
-    private static final float JUMP_SPEED = 800;
-    private static final float GRAVITY = 700;
+    private static final float JUMP_SPEED = 700;
+    private static final float GRAVITY = 600;
     private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62); // first is width, second is height
 //    public static final String BLOCK_TAG = "block";
     public static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;
@@ -85,7 +85,8 @@ public class Avatar extends GameObject {
                 renderer().setIsFlippedHorizontally(false);
             }
         }
-        if (getVelocity().x() == 0 && getVelocity().y() == 0){
+        if (getVelocity().x() == 0 && getVelocity().y() == 0 || !inputListener.isKeyPressed(KeyEvent.VK_LEFT)
+                &&  !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)){
             // static avatar, add 1 point of energy
             changeEnergy(1);
             renderer().setRenderable(idleAnimation);

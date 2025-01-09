@@ -20,8 +20,8 @@ public class Flora {
     private final String avatarTag;
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
-    private static final int MAX_CANOPY_HEIGHT = 10;
-    private static final int MAX_CANOPY_WIDTH = 7;
+    private static final int MAX_CANOPY_HEIGHT = 13;
+    private static final int MAX_CANOPY_WIDTH = 10;
     private static final int MIN_CANOPY_HEIGHT = 4;
     private static final int MIN_CANOPY_WIDTH = 3;
     private static final Color TREE_TRUNK_COLOR = new Color(124, 51, 10);

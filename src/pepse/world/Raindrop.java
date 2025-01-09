@@ -1,6 +1,8 @@
 package src.pepse.world;
 
+import danogl.GameManager;
 import danogl.GameObject;
+import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
@@ -10,7 +12,7 @@ import java.util.function.Consumer;
 
 public class Raindrop extends GameObject {
     public static final String RAIN_TAG = "rain";
-    private static final float GRAVITY = 100;
+    private static final float GRAVITY = 1000;
     public static final Vector2 DIMENSIONS = new Vector2(20, 30);
     public static final float TEARDROP_FALL_TIME = 3f;
     public static final float NO_OPACITY = 1f;
@@ -30,19 +32,15 @@ public class Raindrop extends GameObject {
         this.gameObjectsRemove = gameObjectsRemove;
         transform().setAccelerationY(GRAVITY);
         setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        new Transition<>(this, renderer()::setOpaqueness, NO_OPACITY,
-                0f, Transition.LINEAR_INTERPOLATOR_FLOAT, Raindrop.TEARDROP_FALL_TIME,
-                Transition.TransitionType.TRANSITION_ONCE, null);
+        new Transition<>(this,
+                renderer()::setOpaqueness,
+                NO_OPACITY,
+                0f,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
+                Raindrop.TEARDROP_FALL_TIME,
+                Transition.TransitionType.TRANSITION_ONCE,
+                ()->gameObjectsRemove.accept(this));
         setTag(RAIN_TAG);
 
-    }
-
-    @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-        if(renderer().getOpaqueness()==0){
-            gameObjectsRemove.accept(this);
-            System.out.println("raindrop offed itself");
-        }
     }
 }
