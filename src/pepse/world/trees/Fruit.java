@@ -14,7 +14,8 @@ import static src.pepse.util.PepseConstants.*;
 public class Fruit extends GameObject {
 
 
-    private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE+1, BLOCK_SIZE+1);
+    public static final int DOUBLE = 2;
+    private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE+1, DOUBLE *BLOCK_SIZE);
     private static final int FRUIT_ENERGY_BONUS = 20;
     private static final float FRUIT_RESPAWN_DELAY = DAY_CYCLE_LENGTH;
     private final String avatarTag;
@@ -36,7 +37,7 @@ public class Fruit extends GameObject {
      */
     @Override
     public boolean shouldCollideWith(GameObject other) {
-        return collidable && other.getTag().equals("avatar");
+    return collidable && other.getTag().equals(AVATAR_TAG);
     }
 
     /**
