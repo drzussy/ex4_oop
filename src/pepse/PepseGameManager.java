@@ -172,14 +172,10 @@ public class PepseGameManager extends GameManager{
     private void removeGameObjectsOutOfBounds() {
         for (GameObject obj : gameObjects) {
             if (obj.getTopLeftCorner().x()<minLoadedX || obj.getTopLeftCorner().x()>maxLoadedX) {
+                if (obj.getTag().equals(RAIN_TAG)) continue;
                 gameObjects.removeGameObject(obj, LEAF_AND_RAIN_LAYER); // Removes only leaves
                 gameObjects.removeGameObject(obj, FRUIT_LAYER); // Removes only fruit
                 gameObjects.removeGameObject(obj, Layer.STATIC_OBJECTS); // removes only trees and ground
-            }
-            if(obj.getTag().equals(RAIN_TAG)){
-                if(obj.renderer().getOpaqueness() ==0) {
-                    gameObjects.removeGameObject(obj);
-                }
             }
         }
     }
@@ -195,8 +191,7 @@ public class PepseGameManager extends GameManager{
             List<GameObject> treeLeavesAndFruit = treeList.get(tree);
             for (GameObject obj : treeLeavesAndFruit) {
                 if (obj.getTag().equals(LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_AND_RAIN_LAYER);
-                else if (obj.getTag().equals(FRUIT_TAG)) gameObjects.addGameObject(obj,FRUIT_LAYER);
-                else gameObjects.addGameObject(obj, Layer.STATIC_OBJECTS);
+                else gameObjects.addGameObject(obj,FRUIT_LAYER);
             }
         }
     }
