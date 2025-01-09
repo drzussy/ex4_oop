@@ -5,9 +5,12 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+import static src.pepse.util.PepseConstants.BLOCK_TAG;
+import static src.pepse.util.PepseConstants.BLOCK_SIZE;
+
 public class Block  extends GameObject {
-    public static final int SIZE = 30;
-    static final String BLOCK_TAG = "block";
+
+
 
     /**
      * this class is a block of constant size (SIZE*SIZE) which is immovable and does not allow for any other
@@ -17,7 +20,7 @@ public class Block  extends GameObject {
      */
     public Block(Vector2 topLeftCorner, Renderable renderable) {
         //set to constant size of 30*30
-        super(topLeftCorner, Vector2.ONES.mult(SIZE), renderable);
+        super(topLeftCorner, Vector2.ONES.mult(BLOCK_SIZE), renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
         setTag(BLOCK_TAG);

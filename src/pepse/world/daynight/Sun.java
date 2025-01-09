@@ -8,9 +8,11 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+import static src.pepse.util.PepseConstants.SUN_TAG;
+
 public class Sun {
 
-    public static final String SUN_TAG = "sun";
+
     private static final float HORIZON_RATIO =2f/3;
     private static final float FULL_ROTATION_DEGREES = 360f;
     private static final float DIMENSIONS_CENTER = 0.5f;

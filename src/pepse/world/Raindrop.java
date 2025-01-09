@@ -8,8 +8,10 @@ import danogl.util.Vector2;
 
 import java.util.function.Consumer;
 
+import static src.pepse.util.PepseConstants.RAIN_TAG;
+
 public class Raindrop extends GameObject {
-    public static final String RAIN_TAG = "rain";
+
     private static final float GRAVITY = 1000;
     public static final Vector2 DIMENSIONS = new Vector2(20, 30);
     public static final float TEARDROP_FALL_TIME = 1f;

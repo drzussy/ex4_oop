@@ -16,11 +16,13 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static src.pepse.util.PepseConstants.*;
+
 public class PepseGameManager extends GameManager{
 
-    public static final int DEFAULT_CYCLE_LENGTH = 30;
+
     public static final double MIDDLE = 0.5f;
-    public static final int PLACEMENT_BUFFER = 4 * Block.SIZE;
+    public static final int PLACEMENT_BUFFER = 4 * BLOCK_SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
@@ -28,7 +30,6 @@ public class PepseGameManager extends GameManager{
     private static final int FRUIT_LAYER = 51;
     private static final int CHUNK_SIZE = 1500;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
-    private static final String AVATAR_TAG = "avatar";
     private UserInputListener inputListener;
     private WindowController windowController;
     private Avatar avatar;
@@ -67,7 +68,7 @@ public class PepseGameManager extends GameManager{
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
         minLoadedX = (int) (-CHUNK_SIZE);
-        maxLoadedX = (int) ((windowWidth/Block.SIZE)*Block.SIZE+CHUNK_SIZE);
+        maxLoadedX = (int) ((windowWidth/ BLOCK_SIZE)* BLOCK_SIZE +CHUNK_SIZE);
 
         // Collision optimization
         optimizeLayerCollisions();
@@ -128,11 +129,11 @@ public class PepseGameManager extends GameManager{
         GameObject sky = Sky.create(windowDimensions);
         gameObjects.addGameObject(sky, Layer.BACKGROUND);
         // night initialization
-        GameObject night = Night.create(windowDimensions, DEFAULT_CYCLE_LENGTH);
+        GameObject night = Night.create(windowDimensions, DAY_CYCLE_LENGTH);
         gameObjects.addGameObject(night, Layer.FOREGROUND);
 
         // sun initialization
-        GameObject sun = Sun.create(windowDimensions, DEFAULT_CYCLE_LENGTH);
+        GameObject sun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH);
         gameObjects.addGameObject(sun, Layer.BACKGROUND);
 
         // halo initialization
@@ -181,8 +182,8 @@ public class PepseGameManager extends GameManager{
             gameObjects.addGameObject(tree, Layer.STATIC_OBJECTS);
             List<GameObject> treeLeavesAndFruit = treeList.get(tree);
             for (GameObject obj : treeLeavesAndFruit) {
-                if (obj.getTag().equals(Flora.LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_LAYER);
-                else if (obj.getTag().equals(Flora.FRUIT_TAG)) gameObjects.addGameObject(obj,FRUIT_LAYER);
+                if (obj.getTag().equals(LEAF_TAG)) gameObjects.addGameObject(obj, LEAF_LAYER);
+                else if (obj.getTag().equals(FRUIT_TAG)) gameObjects.addGameObject(obj,FRUIT_LAYER);
                 else gameObjects.addGameObject(obj, Layer.STATIC_OBJECTS);
             }
         }

@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static src.pepse.util.PepseConstants.*;
+
 public class Flora {
-    public static final String FRUIT_TAG = "fruit";
-    public static final String LEAF_TAG = "leaf";
+
     private final String avatarTag;
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
@@ -52,9 +53,9 @@ public class Flora {
 
     public Map<Tree, List<GameObject>> createInRange(int minX, int maxX){
         Map<Tree, List<GameObject>> map = new HashMap<>();
-        minX = ((minX + Block.SIZE - 1) / Block.SIZE) * Block.SIZE;
-        maxX = (maxX / Block.SIZE) * Block.SIZE;
-        for (float x = minX; x <= maxX; x=x+Block.SIZE) {
+        minX = ((minX + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;
+        maxX = (maxX / BLOCK_SIZE) * BLOCK_SIZE;
+        for (float x = minX; x <= maxX; x=x+BLOCK_SIZE) {
             Random random = new Random(Objects.hash(x, seed));
             if (random.nextFloat()<=TREE_CHANCE) { // create tree for 20% of blocks
                 Tree tree = generateTree(x);
@@ -66,12 +67,12 @@ public class Flora {
     }
 
     private Tree generateTree (float x) {
-        float treeHeight = treeHeightAtInBlocks(x) * Block.SIZE;
+        float treeHeight = treeHeightAtInBlocks(x) * BLOCK_SIZE;
         Vector2 treeTopLeftCorner = new Vector2(x, getGroundHeightAt.apply(x) - treeHeight);
-        Vector2 treeSize = new Vector2(Block.SIZE, treeHeight);
+        Vector2 treeBLOCK_SIZE = new Vector2(BLOCK_SIZE, treeHeight);
         Renderable treeRender = new RectangleRenderable(
                 approximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
-        return new Tree (treeTopLeftCorner, treeSize, treeRender);
+        return new Tree (treeTopLeftCorner, treeBLOCK_SIZE, treeRender);
     }
 
     private int treeHeightAtInBlocks (float x) {
@@ -84,15 +85,15 @@ public class Flora {
         Random random = new Random(Objects.hash(x, seed));
         int canopyHeight = random.nextInt(MIN_CANOPY_HEIGHT, MAX_CANOPY_HEIGHT+1);
         int canopyWidth = random.nextInt(MIN_CANOPY_WIDTH, MAX_CANOPY_WIDTH+1);
-        float rightShift = (float) (canopyWidth -1)*Block.SIZE/2;
-        float downShift = (float) (canopyHeight *Block.SIZE)/2;
+        float rightShift = (float) (canopyWidth -1)*BLOCK_SIZE/2;
+        float downShift = (float) (canopyHeight *BLOCK_SIZE)/2;
         Renderable leafRender = new RectangleRenderable(
                 approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
         for (int row = 0; row< canopyHeight; row++) {
             for (int col = 0; col< canopyWidth; col++) {
                 if (random.nextFloat()<LEAF_CHANCE) {
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
-                            col*Block.SIZE- rightShift, row*Block.SIZE- downShift));
+                            col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
                     Block leaf = new Block(leafTopLeft, leafRender);
                     leaf.setTag(LEAF_TAG);
                     Runnable createLeafTransitions = () -> {
@@ -106,8 +107,8 @@ public class Flora {
                                 null);
                         new Transition<>(leaf,
                                 leaf::setDimensions,
-                                new Vector2(Block.SIZE, Block.SIZE),
-                                new Vector2(Block.SIZE*LEAF_WIND_WIDTH_FACTOR, Block.SIZE*LEAF_WIND_HEIGHT_FACTOR),
+                                new Vector2(BLOCK_SIZE, BLOCK_SIZE),
+                                new Vector2(BLOCK_SIZE*LEAF_WIND_WIDTH_FACTOR, BLOCK_SIZE*LEAF_WIND_HEIGHT_FACTOR),
                                 Transition.LINEAR_INTERPOLATOR_VECTOR,
                                 LEAF_CYCLE_LENGTH,
                                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
@@ -118,7 +119,7 @@ public class Flora {
                     foliageList.add(leaf);
                 } if (random.nextFloat() < FRUIT_CHANCE) {
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
-                            col*Block.SIZE- rightShift, row*Block.SIZE- downShift));
+                            col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
                     Fruit fruit = new Fruit(leafTopLeft, pineappleImage, avatarTag);
                     fruit.setTag(FRUIT_TAG);
                     foliageList.add(fruit);

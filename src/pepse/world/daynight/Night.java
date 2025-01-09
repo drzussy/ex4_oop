@@ -8,9 +8,11 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+import static src.pepse.util.PepseConstants.NIGHT_TAG;
+
 public class Night {
 
-    public static final String NIGHT_TAG = "night";
+
     private static final float MIDNIGHT_OPAQUENESS = 0.5f;
 
     public static GameObject create(Vector2 windowDimensions, float cycleLength){

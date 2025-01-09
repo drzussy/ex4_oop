@@ -12,6 +12,8 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+import static src.pepse.util.PepseConstants.BLOCK_SIZE;
+
 public class Cloud implements JumpObserver{
 
     public static final String ASSETS_ALIEN_PNG = "assets/alien.png";
@@ -54,8 +56,8 @@ public class Cloud implements JumpObserver{
     }
     public List<GameObject> create () {
 
-        int cloudWidth = (int) (dimensions.x()/Block.SIZE);
-        int cloudHeight = (int) (dimensions.y()/Block.SIZE);
+        int cloudWidth = (int) (dimensions.x()/BLOCK_SIZE);
+        int cloudHeight = (int) (dimensions.y()/BLOCK_SIZE);
         List<GameObject> cloudList = new ArrayList<>();
         List<List<Boolean>> cloudShape = generateCloud(cloudWidth, cloudHeight);
         if (cloudShape==null) return null;
@@ -64,8 +66,8 @@ public class Cloud implements JumpObserver{
             List<Boolean> cloudRow = cloudShape.get(row);
             for (int col = 0; col<cloudWidth; col++) {
                 if (cloudRow.get(col)) {
-                    float rightShift = col*Block.SIZE;
-                    Vector2 cloudTopLeft = topLeftCorner.add(new Vector2(col, row).mult(Block.SIZE));
+                    float rightShift = col*BLOCK_SIZE;
+                    Vector2 cloudTopLeft = topLeftCorner.add(new Vector2(col, row).mult(BLOCK_SIZE));
 //                    Block cloud = new Block(cloudTopLeft, new RectangleRenderable(
 //                            ColorSupplier.approximateColor(CLOUD_COLOR, CLOUD_COLOR_DELTA)));
                     Block cloud = new Block(cloudTopLeft,cloudRenderable);

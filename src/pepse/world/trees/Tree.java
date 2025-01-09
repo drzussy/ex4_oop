@@ -5,9 +5,11 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
+import static src.pepse.util.PepseConstants.TREE_TAG;
+
 
 public class Tree extends GameObject{
-    private static final String TREE_TAG = "tree";
+
 
     /**
      * Construct a new Tree. Receives all of its parameters from Flora.

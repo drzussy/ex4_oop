@@ -7,9 +7,10 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
+import static src.pepse.util.PepseConstants.SKY_TAG;
+
 public class Sky {
     private static final Color BASIC_SKY_COLOR = Color.decode("#80C6E5");
-    private static final String SKY_TAG = "sky";
 
     /**
      *

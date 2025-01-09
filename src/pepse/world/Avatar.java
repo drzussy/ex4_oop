@@ -10,7 +10,8 @@ import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
-import static src.pepse.world.Block.BLOCK_TAG;
+import static src.pepse.util.PepseConstants.BLOCK_TAG;
+import static src.pepse.util.PepseConstants.GRAVITY;
 
 public class Avatar extends GameObject {
 
@@ -33,7 +34,7 @@ public class Avatar extends GameObject {
     private final List<JumpObserver> jumpObservers = new ArrayList<>();
     private static final float WALKING_SPEED = 300;
     private static final float JUMP_SPEED = 700;
-    private static final float GRAVITY = 600;
+
     private static final Vector2 AVATAR_SIZE = new Vector2 (40, 62); // first is width, second is height
 //    public static final String BLOCK_TAG = "block";
     public static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;

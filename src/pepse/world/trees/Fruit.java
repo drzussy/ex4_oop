@@ -5,15 +5,18 @@ import danogl.collisions.Collision;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import src.pepse.util.PepseConstants;
 import src.pepse.world.Avatar;
+
+import static src.pepse.util.PepseConstants.*;
 
 
 public class Fruit extends GameObject {
 
-    public static final String FRUIT_TAG = "fruit";
-    private static final Vector2 FRUIT_SIZE = new Vector2(17, 27);
+
+    private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE+1, BLOCK_SIZE+1);
     private static final int FRUIT_ENERGY_BONUS = 20;
-    private static final float FRUIT_RESPAWN_DELAY = 3;
+    private static final float FRUIT_RESPAWN_DELAY = DAY_CYCLE_LENGTH;
     private final String avatarTag;
     private boolean collidable = true;
     Renderable fruitImage;
