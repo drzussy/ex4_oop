@@ -1,25 +1,20 @@
 package src.pepse;
 
 import danogl.collisions.GameObjectCollection;
-import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.OvalRenderable;
 import src.pepse.world.*;
-import src.pepse.world.daynight.Night;
+import src.pepse.world.daynight.*;
+import src.pepse.world.trees.*;
+import static src.pepse.util.PepseConstants.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
 import danogl.util.Vector2;
-import src.pepse.world.daynight.*;
-import src.pepse.world.trees.*;
-
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
-
-import static src.pepse.util.PepseConstants.*;
 
 /**
  * The game manager for our PEPSE. Initializes the game and makes sure to load and unload additional world
@@ -33,7 +28,12 @@ public class PepseGameManager extends GameManager{
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     private static final int CHUNK_SIZE = BLOCK_SIZE*25;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
+    private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
+    private static final int SECOND_SUN_ANGLE = 30;
+    private static final int MOON_ANGLE = 195;
+    private static final int TARGET_FRAMERATE = 30;
     private GameObjectCollection gameObjects;
+    private ImageReader imageReader;
     private Avatar avatar;
     private Terrain terrain;
     private Flora flora;
@@ -60,7 +60,8 @@ public class PepseGameManager extends GameManager{
                                UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.gameObjects = gameObjects();
-        windowController.setTargetFramerate(30);
+        this.imageReader = imageReader;
+        windowController.setTargetFramerate(TARGET_FRAMERATE);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
         minLoadedX = -CHUNK_SIZE;
@@ -104,10 +105,10 @@ public class PepseGameManager extends GameManager{
         so fewer collisions are computed and the game runs faster.
      */
     private void optimizeLayerCollisions() {
-        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_AND_RAIN_LAYER, false);
+        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, FRUIT_LAYER, true);
         gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_AND_RAIN_LAYER, false);
         gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, LEAF_AND_RAIN_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, FRUIT_LAYER, false);
         gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, Layer.STATIC_OBJECTS, false);
         gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, LEAF_AND_RAIN_LAYER, false);
         gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, FRUIT_LAYER, false);
@@ -126,16 +127,14 @@ public class PepseGameManager extends GameManager{
         gameObjects.addGameObject(sun, Layer.BACKGROUND);
         gameObjects.addGameObject(sunHalo, Layer.BACKGROUND);
 
-        Runnable createSecondSunAndHalo = () -> {
-            GameObject secondSun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH);
-            GameObject secondSunHalo = SunHalo.create(secondSun);
-            secondSun.renderer().setRenderable(new OvalRenderable(Color.ORANGE));
-            secondSunHalo.renderer().setRenderable(new OvalRenderable(Color.RED));
-            secondSunHalo.renderer().setOpaqueness(0.2f);
-            gameObjects.addGameObject(secondSun, Layer.BACKGROUND);
-            gameObjects.addGameObject(secondSunHalo, Layer.BACKGROUND);
-        };
-        new ScheduledTask(sun, 1.5f, false, createSecondSunAndHalo);
+        // Second sun + moon initialization
+        GameObject secondSun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH, Color.RED, SECOND_SUN_ANGLE);
+        GameObject secondSunHalo = SunHalo.create(secondSun, Color.RED);
+        gameObjects.addGameObject(secondSun, Layer.BACKGROUND);
+        gameObjects.addGameObject(secondSunHalo, Layer.BACKGROUND);
+        GameObject moon = Sun.create(windowDimensions, DAY_CYCLE_LENGTH, Color.WHITE, MOON_ANGLE);
+        moon.renderer().setRenderable(imageReader.readImage(PATH_TO_MOON_IMAGE, true));
+        gameObjects.addGameObject(moon, Layer.BACKGROUND);
     }
 
     /**
