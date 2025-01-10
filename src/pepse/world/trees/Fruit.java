@@ -31,7 +31,7 @@ public class Fruit extends GameObject {
      */
     @Override
     public boolean shouldCollideWith(GameObject other) {
-    return collidable && other.getTag().equals(AVATAR_TAG);
+    return collidable && (other.getTag().equals(AVATAR_TAG) || other.getTag().equals(TREE_TAG));
     }
 
     /**
@@ -45,7 +45,10 @@ public class Fruit extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (!other.getTag().equals(AVATAR_TAG)) return;
+        if (!other.getTag().equals(AVATAR_TAG)) {
+            if (other.getTag().equals(TREE_TAG)) despawnFruit();
+            return;
+        }
         Avatar avatar = (Avatar) other;
         avatar.changeEnergy(FRUIT_ENERGY_BONUS);
         despawnFruit();
