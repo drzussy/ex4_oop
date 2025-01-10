@@ -28,7 +28,8 @@ public class Raindrop extends GameObject {
      * @param gameObjectsRemove A callback to the method which removes a GameObject once opacity is 0,
      *                          by using the optional afterFadeOut parameter of RendererComponent.fadeOut().
      */
-    public Raindrop(Vector2 topLeftCorner, Renderable renderable, BiConsumer<GameObject, Integer> gameObjectsRemove){
+    public Raindrop(Vector2 topLeftCorner, Renderable renderable,
+                    BiConsumer<GameObject, Integer> gameObjectsRemove){
         super(topLeftCorner, DIMENSIONS, renderable);
         transform().setAccelerationY(RAINDROP_GRAVITY);
         setTag(RAIN_TAG);

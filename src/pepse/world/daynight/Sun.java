@@ -38,7 +38,7 @@ public class Sun {
 //                HORIZON_RATIO * windowDimensions.y());
 //        new Transition<>(sun,
 //                (Float angle)->
-//                        sun.setCenter(initialSunCenter.subtract(cycleCenter).rotated(angle).add(cycleCenter)),
+//                    sun.setCenter(initialSunCenter.subtract(cycleCenter).rotated(angle).add(cycleCenter)),
 //                0f,
 //                FULL_ROTATION_DEGREES,
 //                Transition.LINEAR_INTERPOLATOR_FLOAT,

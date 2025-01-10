@@ -82,13 +82,15 @@ public class Avatar extends GameObject {
                         obs.notifyAboutJump();
                 }
             }
-        } else if (inputListener.isKeyPressed(KeyEvent.VK_LEFT) && !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
+        } else if (inputListener.isKeyPressed(KeyEvent.VK_LEFT)
+                && !inputListener.isKeyPressed(KeyEvent.VK_RIGHT)) {
             if (getVelocity().y()!=0 || changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
                 xVel -= WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);
                 renderer().setIsFlippedHorizontally(true);
             }
-        } else if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT) && !inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
+        } else if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT)
+                && !inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
             if (getVelocity().y()!=0 || changeEnergy(HORIZONTAL_MOVE_ENERGY_DECREASE)) {
                 xVel += WALKING_SPEED;
                 renderer().setRenderable(runningAnimation);

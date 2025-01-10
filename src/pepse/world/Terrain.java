@@ -58,11 +58,8 @@ public class Terrain {
         maxX = maxX+ BLOCK_SIZE - maxX% BLOCK_SIZE; //add buffer to the right
         //iterate block columns in range
         for (int x = minX; x <= maxX; x+= BLOCK_SIZE) {
-            //for each x make the column of terrain so that terrain is filled through till the bottom of
-            // the screen
+            // for each x make the column of terrain so that terrain is filled to the desired depth
             double height = groundHeightAt(x);
-            //  for (int j = (int) height; j < windowDimensions.y(); j+=SIZE) {
-            //  ^ this is a better implementation but the targil instructions gave a default depth of 20 bricks
             for (int j = (int) height; j < (int) height + DEFAULT_DEPTH * BLOCK_SIZE; j+= BLOCK_SIZE) {
                 Block block = new Block(new Vector2(x, j),
                         new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));

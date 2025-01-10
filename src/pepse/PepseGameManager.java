@@ -76,7 +76,8 @@ public class PepseGameManager extends GameManager{
         loadWorld(minLoadedX, maxLoadedX);
         // avatar initialization
         float middle_x = (float) (windowDimensions.x()* MIDDLE);
-        Vector2 avatarInitialPosition = new Vector2(middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
+        Vector2 avatarInitialPosition = new Vector2(
+                middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
         gameObjects.addGameObject(avatar);
         avatar.setTag(AVATAR_TAG);
