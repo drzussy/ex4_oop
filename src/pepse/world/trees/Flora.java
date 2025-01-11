@@ -20,10 +20,12 @@ public class Flora {
     private static final String PATH_TO_FRUIT_IMAGE = "assets/pineapple.png";
     private static final int MIN_TREE_HEIGHT = 5;
     private static final int MAX_TREE_HEIGHT = 12;
-    private static final int MAX_CANOPY_HEIGHT = 13;
+    private static final int MAX_CANOPY_HEIGHT = 20;
     private static final int MAX_CANOPY_WIDTH = 10;
     private static final int MIN_CANOPY_HEIGHT = 4;
     private static final int MIN_CANOPY_WIDTH = 3;
+    private static final float HALF = 0.5f;
+    private static final float CANOPY_TO_TREE_HEIGHT_RATIO = 1.5f;
     private static final Color TREE_TRUNK_COLOR = new Color(124, 51, 10);
     private static final int TREE_COLOR_DELTA = 50;
     private static final Color LEAF_COLOR = new Color(21, 84, 12);
@@ -35,6 +37,7 @@ public class Flora {
     private static final float LEAF_WIND_HEIGHT_FACTOR = 0.95f;
     private static final float FRUIT_CHANCE = 0.05f;
     private static final float TREE_CHANCE = 0.1f;
+    private static final int MAX_RGB_VAL = 255;
     private final Function<Float, Float> getGroundHeightAt;
     private final int seed;
     private final Renderable fruitImage;
@@ -55,7 +58,8 @@ public class Flora {
             Random random = new Random(Objects.hash(x, seed));
             if (random.nextFloat()<=TREE_CHANCE) { // create tree for 20% of blocks
                 Tree tree = generateTree(x);
-                ArrayList<GameObject> leafList = generateLeaves(x, tree.getTopLeftCorner());
+                ArrayList<GameObject> leafList = generateLeaves(
+                                        x, tree.getTopLeftCorner(), tree.getDimensions().y());
                 map.put(tree, leafList);
             }
         }
@@ -65,10 +69,10 @@ public class Flora {
     private Tree generateTree (float x) {
         float treeHeight = treeHeightAtInBlocks(x) * BLOCK_SIZE;
         Vector2 treeTopLeftCorner = new Vector2(x, getGroundHeightAt.apply(x) - treeHeight);
-        Vector2 treeBLOCK_SIZE = new Vector2(BLOCK_SIZE, treeHeight);
+        Vector2 tree_dimensions = new Vector2(BLOCK_SIZE, treeHeight);
         Renderable treeRender = new RectangleRenderable(
                 approximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
-        return new Tree (treeTopLeftCorner, treeBLOCK_SIZE, treeRender);
+        return new Tree (treeTopLeftCorner, tree_dimensions, treeRender);
     }
 
     private int treeHeightAtInBlocks (float x) {
@@ -77,13 +81,14 @@ public class Flora {
     }
 
     // Helper method for creating leaves around a particular tree.
-    private ArrayList<GameObject> generateLeaves(float x, Vector2 treeTopLeftCorner) {
+    private ArrayList<GameObject> generateLeaves(float x, Vector2 treeTopLeftCorner, float treeHeight) {
         ArrayList<GameObject> foliageList = new ArrayList<>();
         Random random = new Random(Objects.hash(x, seed));
         int canopyHeight = random.nextInt(MIN_CANOPY_HEIGHT, MAX_CANOPY_HEIGHT+1);
+        canopyHeight = Math.min(canopyHeight, (int) (CANOPY_TO_TREE_HEIGHT_RATIO*treeHeight/BLOCK_SIZE));
         int canopyWidth = random.nextInt(MIN_CANOPY_WIDTH, MAX_CANOPY_WIDTH+1);
-        float rightShift = canopyWidth/2f*BLOCK_SIZE;
-        float downShift = canopyHeight/2f*BLOCK_SIZE;
+        float rightShift = canopyWidth*HALF*BLOCK_SIZE;
+        float downShift = canopyHeight*HALF*BLOCK_SIZE;
         Renderable leafRender = new RectangleRenderable(
                 approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
         for (int row = 0; row< canopyHeight; row++) {
@@ -144,6 +149,6 @@ public class Flora {
     }
     private static int randomChannelInRange(int min, int max, Random random) {
         int channel = random.nextInt(max-min+1) + min;
-        return Math.min(255, Math.max(channel, 0));
+        return Math.min(MAX_RGB_VAL, Math.max(channel, 0));
     }
 }
