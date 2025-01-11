@@ -35,7 +35,7 @@ public class Avatar extends GameObject {
     private final AnimationRenderable runningAnimation;
     private static final float WALKING_SPEED = BLOCK_SIZE*15;
     private static final float JUMP_SPEED = BLOCK_SIZE*24;
-    private static final Vector2 AVATAR_SIZE = new Vector2 (BLOCK_SIZE*4/3F, BLOCK_SIZE*2);
+    private static final Vector2 AVATAR_SIZE = new Vector2 (BLOCK_SIZE*0.9F, BLOCK_SIZE*1.5f);
     private static final double HORIZONTAL_MOVE_ENERGY_DECREASE = -0.5;
     private static final int JUMP_ENERGY_DECREASE = -10;
     private static final int FULL_ENERGY = 100;
