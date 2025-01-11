@@ -5,7 +5,7 @@ import danogl.gui.rendering.Camera;
 import pepse.world.*;
 import pepse.world.daynight.*;
 import pepse.world.trees.*;
-import static pepse.PepseConstants.*;
+import static pepse.util.PepseConstants.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;
@@ -26,6 +26,7 @@ public class PepseGameManager extends GameManager{
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
+    public static final float CHUNK_RATIO = 0.6f;
     private static int chunkSize;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
@@ -75,7 +76,7 @@ public class PepseGameManager extends GameManager{
         windowController.setTargetFramerate(TARGET_FRAMERATE);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
-        chunkSize = (int) (windowWidth*0.6f/BLOCK_SIZE)*BLOCK_SIZE;
+        chunkSize = (int) (windowWidth* CHUNK_RATIO /BLOCK_SIZE)*BLOCK_SIZE;
         minLoadedX = -chunkSize;
         maxLoadedX = (int) (chunkSize + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
         optimizeLayerCollisions(); // Collision optimization

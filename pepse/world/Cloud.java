@@ -12,8 +12,8 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static pepse.PepseConstants.BLOCK_SIZE;
-import static pepse.PepseConstants.LEAF_AND_RAIN_LAYER;
+import static pepse.util.PepseConstants.BLOCK_SIZE;
+import static pepse.util.PepseConstants.LEAF_AND_RAIN_LAYER;
 
 /**
  * A class for creating a cloud, which moves across the camera and causes rain when the avatar jumps.

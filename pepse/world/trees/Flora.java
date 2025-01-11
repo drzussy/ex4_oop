@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static pepse.PepseConstants.*;
+import static pepse.util.PepseConstants.*;
 
 /**
  * A utility class for generating trees, leaves, and associated game objects within a given range.

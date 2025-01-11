@@ -10,7 +10,7 @@ import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
-import static pepse.PepseConstants.*;
+import static pepse.util.PepseConstants.*;
 
 /**
  * The class representing the game avatar, controlled by the player.

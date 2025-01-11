@@ -7,7 +7,7 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 
-import static pepse.PepseConstants.*;
+import static pepse.util.PepseConstants.*;
 
 /**
  * The Fruit class represents a fruit object in the game that can be interacted with by the Avatar.

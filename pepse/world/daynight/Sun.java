@@ -6,7 +6,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
 import java.awt.*;
-import static pepse.PepseConstants.SUN_TAG;
+import static pepse.util.PepseConstants.SUN_TAG;
 
 /**
  * A class for creating a Sun object.

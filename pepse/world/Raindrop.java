@@ -7,7 +7,7 @@ import danogl.util.Vector2;
 
 import java.util.function.BiConsumer;
 
-import static pepse.PepseConstants.*;
+import static pepse.util.PepseConstants.*;
 
 /**
  * A Raindrop class. Randomly created by the Cloud class when the game avatar jumps.

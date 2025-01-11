@@ -5,8 +5,8 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-import static pepse.PepseConstants.BLOCK_TAG;
-import static pepse.PepseConstants.BLOCK_SIZE;
+import static pepse.util.PepseConstants.BLOCK_TAG;
+import static pepse.util.PepseConstants.BLOCK_SIZE;
 
 /**
  * A basic, square GameObject block. Used in the terrain, in leaves, and in cloud parts.

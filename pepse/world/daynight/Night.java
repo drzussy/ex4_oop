@@ -6,7 +6,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import java.awt.Color;
-import static pepse.PepseConstants.NIGHT_TAG;
+import static pepse.util.PepseConstants.NIGHT_TAG;
 
 /**
  * A class for creating nighttime darkness cycles. Used only via the static method Night.create().
