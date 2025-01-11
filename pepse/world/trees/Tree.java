@@ -1,10 +1,10 @@
-package src.pepse.world.trees;
+package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import static src.pepse.PepseConstants.TREE_TAG;
+import static pepse.PepseConstants.TREE_TAG;
 
 /**
  * A class representing a tree in-game.

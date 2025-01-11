@@ -1,4 +1,4 @@
-package src.pepse.world.trees;
+package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.components.ScheduledTask;
@@ -6,7 +6,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.world.Block;
+import pepse.world.Block;
 
 import java.awt.*;
 import java.util.*;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static src.pepse.PepseConstants.*;
+import static pepse.PepseConstants.*;
 
 public class Flora {
     private static final String PATH_TO_FRUIT_IMAGE = "assets/pineapple.png";

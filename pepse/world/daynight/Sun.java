@@ -1,4 +1,4 @@
-package src.pepse.world.daynight;
+package pepse.world.daynight;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -6,7 +6,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
 import java.awt.*;
-import static src.pepse.PepseConstants.SUN_TAG;
+import static pepse.PepseConstants.SUN_TAG;
 
 /**
  * A class for creating a Sun object.

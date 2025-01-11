@@ -1,4 +1,4 @@
-package src.pepse.world;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -12,8 +12,8 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static src.pepse.PepseConstants.BLOCK_SIZE;
-import static src.pepse.PepseConstants.LEAF_AND_RAIN_LAYER;
+import static pepse.PepseConstants.BLOCK_SIZE;
+import static pepse.PepseConstants.LEAF_AND_RAIN_LAYER;
 
 /**
  * A class for creating a cloud, which moves across the camera and causes rain when the avatar jumps.

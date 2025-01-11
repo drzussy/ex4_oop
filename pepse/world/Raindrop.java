@@ -1,4 +1,4 @@
-package src.pepse.world;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -7,7 +7,7 @@ import danogl.util.Vector2;
 
 import java.util.function.BiConsumer;
 
-import static src.pepse.PepseConstants.*;
+import static pepse.PepseConstants.*;
 
 /**
  * A Raindrop class. Randomly created by the Cloud class when the game avatar jumps.

@@ -1,11 +1,11 @@
-package src.pepse.world.daynight;
+package pepse.world.daynight;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
 import java.awt.Color;
-import static src.pepse.PepseConstants.SUN_HALO_TAG;
+import static pepse.PepseConstants.SUN_HALO_TAG;
 
 /**
  * A class to create halos for already-created suns. Used via its static method, create(sun).

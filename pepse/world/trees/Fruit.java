@@ -1,13 +1,13 @@
-package src.pepse.world.trees;
+package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import src.pepse.world.Avatar;
+import pepse.world.Avatar;
 
-import static src.pepse.PepseConstants.*;
+import static pepse.PepseConstants.*;
 
 
 public class Fruit extends GameObject {

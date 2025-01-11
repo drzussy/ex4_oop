@@ -1,4 +1,4 @@
-package src.pepse.world;
+package pepse.world;
 
 /**
  * The JumpObserver interface, used as part of the Observer design pattern to safely allow objects

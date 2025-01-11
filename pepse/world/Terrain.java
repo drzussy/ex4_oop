@@ -1,7 +1,7 @@
-package src.pepse.world;
+package pepse.world;
 
-import src.pepse.util.ColorSupplier;
-import src.pepse.util.NoiseGenerator;
+import pepse.util.ColorSupplier;
+import pepse.util.NoiseGenerator;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 
@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static src.pepse.PepseConstants.BLOCK_SIZE;
+import static pepse.PepseConstants.BLOCK_SIZE;
 
 /**
  * A class for creating terrain, in the form of Block objects (which extend GameObject) at differing,

@@ -1,11 +1,11 @@
-package src.pepse;
+package pepse;
 
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.Camera;
-import src.pepse.world.*;
-import src.pepse.world.daynight.*;
-import src.pepse.world.trees.*;
-import static src.pepse.PepseConstants.*;
+import pepse.world.*;
+import pepse.world.daynight.*;
+import pepse.world.trees.*;
+import static pepse.PepseConstants.*;
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.Layer;

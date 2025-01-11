@@ -1,11 +1,11 @@
-package src.pepse.world;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import java.awt.Color;
-import static src.pepse.PepseConstants.SKY_TAG;
+import static pepse.PepseConstants.SKY_TAG;
 
 /**
  * The class used (only via the static method create()) to create the sky GameObject.

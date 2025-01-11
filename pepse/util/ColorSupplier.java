@@ -1,4 +1,4 @@
-package src.pepse.util;
+package pepse.util;
 
 import java.awt.*;
 import java.util.Random;

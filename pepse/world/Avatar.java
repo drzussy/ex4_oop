@@ -1,4 +1,4 @@
-package src.pepse.world;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
@@ -10,7 +10,7 @@ import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 import java.util.*;
 
-import static src.pepse.PepseConstants.*;
+import static pepse.PepseConstants.*;
 
 /**
  * The class representing the game avatar, controlled by the player.
