@@ -26,12 +26,13 @@ public class PepseGameManager extends GameManager{
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
-    private static final int CHUNK_SIZE = BLOCK_SIZE*25;
+    private static int chunkSize;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
     private static final int SECOND_SUN_ANGLE = 30;
     private static final int MOON_ANGLE = 195;
-    private static final int TARGET_FRAMERATE = 30;
+    private static final int TARGET_FRAMERATE = 60;
+    private static final float MOON_SIZE_RATIO = 1.5f;
     private GameObjectCollection gameObjects;
     private ImageReader imageReader;
     private UserInputListener inputListener;
@@ -42,6 +43,8 @@ public class PepseGameManager extends GameManager{
     private Vector2 windowDimensions;
     private int minLoadedX;
     private int maxLoadedX;
+    private static int checkDelayer = 0;
+    private static final int DELAY_TIMER = 30;
 
     public static void main(String[] args){
         new PepseGameManager().run();
@@ -67,8 +70,9 @@ public class PepseGameManager extends GameManager{
         windowController.setTargetFramerate(TARGET_FRAMERATE);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
-        minLoadedX = -CHUNK_SIZE;
-        maxLoadedX = (int) (CHUNK_SIZE + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
+        chunkSize = (int) (windowWidth*0.6f/BLOCK_SIZE)*BLOCK_SIZE;
+        minLoadedX = -chunkSize;
+        maxLoadedX = (int) (chunkSize + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
         optimizeLayerCollisions(); // Collision optimization
         createBackgroundObjects(); // Create background objects - sky, sun & halo, nighttime
         //terrain initialization
@@ -82,18 +86,6 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions(), windowController.getWindowDimensions()));
     }
 
-    private void createAvatar() {
-        float middle_x = (float) (windowDimensions.x()* MIDDLE);
-        Vector2 avatarInitialPosition = new Vector2(
-                middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
-        avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
-        gameObjects.addGameObject(avatar);
-        avatar.setTag(AVATAR_TAG);
-        avatar.addJumpObserver(cloud);
-        // Create energy display
-        Supplier<Double> callback = avatar::getEnergy;
-        gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
-    }
 
     /*
         Helper method to nullify specific layer collisions,
@@ -129,6 +121,7 @@ public class PepseGameManager extends GameManager{
         gameObjects.addGameObject(secondSunHalo, Layer.BACKGROUND);
         GameObject moon = Sun.create(windowDimensions, DAY_CYCLE_LENGTH, Color.WHITE, MOON_ANGLE);
         moon.renderer().setRenderable(imageReader.readImage(PATH_TO_MOON_IMAGE, true));
+        moon.setDimensions(moon.getDimensions().mult(MOON_SIZE_RATIO));
         GameObject moonHalo = SunHalo.create(moon, Color.GREEN);
         gameObjects.addGameObject(moonHalo, Layer.BACKGROUND);
         gameObjects.addGameObject(moon, Layer.BACKGROUND);
@@ -144,6 +137,18 @@ public class PepseGameManager extends GameManager{
             }
         }
     }
+    private void createAvatar() {
+        float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        Vector2 avatarInitialPosition = new Vector2(
+                middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
+        avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
+        gameObjects.addGameObject(avatar);
+        avatar.setTag(AVATAR_TAG);
+        avatar.addJumpObserver(cloud);
+        // Create energy display
+        Supplier<Double> callback = avatar::getEnergy;
+        gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
+    }
 
     /**
      * The update method, used to manage the addition and removal of GameObjects to/from the game.
@@ -157,6 +162,22 @@ public class PepseGameManager extends GameManager{
         super.update(deltaTime);
         reloadInfiniteWorld();
         removeGameObjectsOutOfBounds();
+        // We don't check this every update, because it's an "expensive" check
+        if (checkDelayer==DELAY_TIMER) fixAvatarUnderground();
+        else checkDelayer++;
+    }
+
+    // Helper method to ensure the avatar doesn't get stuck inside blocks after falling with too much speed.
+    private void fixAvatarUnderground() {
+        float avatarHeight = avatar.getDimensions().y();
+        Vector2 avatarLocation = avatar.getTopLeftCorner();
+        float avatarX = avatarLocation.x();
+        float avatarY = avatarLocation.y();
+        float groundHeight = terrain.groundHeightAt(avatarX);
+        if (avatarY+avatarHeight>groundHeight+BLOCK_SIZE*MIDDLE) {
+            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight));
+        }
+        checkDelayer=0;
     }
 
     /* Both processes are handled by maintaining the smallest (furthest to the left) and biggest
@@ -164,15 +185,15 @@ public class PepseGameManager extends GameManager{
      * generating the new chunk, and deleting everything not between those two values.
      */
     private void reloadInfiniteWorld() {
-        if (avatar.getCenter().x()-minLoadedX < CHUNK_SIZE) {
-            loadWorld(minLoadedX-CHUNK_SIZE, minLoadedX); // Load the world to the left
-            minLoadedX -= CHUNK_SIZE;
-            maxLoadedX -= CHUNK_SIZE;
+        if (avatar.getCenter().x()-minLoadedX < chunkSize) {
+            loadWorld(minLoadedX- chunkSize, minLoadedX); // Load the world to the left
+            minLoadedX -= chunkSize;
+            maxLoadedX -= chunkSize;
         }
-        else if (maxLoadedX-avatar.getCenter().x() < CHUNK_SIZE) {
-            loadWorld(maxLoadedX, maxLoadedX+CHUNK_SIZE); // Load the world to the right
-            minLoadedX += CHUNK_SIZE;
-            maxLoadedX += CHUNK_SIZE;
+        else if (maxLoadedX-avatar.getCenter().x() < chunkSize) {
+            loadWorld(maxLoadedX, maxLoadedX+ chunkSize); // Load the world to the right
+            minLoadedX += chunkSize;
+            maxLoadedX += chunkSize;
         }
     }
 
