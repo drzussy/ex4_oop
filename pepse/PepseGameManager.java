@@ -21,20 +21,20 @@ import java.util.function.Supplier;
  * chunks when and where needed.
  */
 public class PepseGameManager extends GameManager{
-    private static final double MIDDLE = 0.5f;
-    private static final int PLACEMENT_BUFFER = 4 * BLOCK_SIZE;
+    private static final int TARGET_FRAMERATE = 60;
+    private static final int AVATAR_PLACEMENT_BUFFER = 3 * BLOCK_SIZE;
+    public static final float AVATAR_RESET_BUFFER = 0.2f * BLOCK_SIZE;
+    private static final float MIDDLE = 0.5f;
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     public static final float CHUNK_RATIO = 0.6f;
-    public static final float RESET_BUFFER = 0.2f * BLOCK_SIZE;
-    private static int chunkSize;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
     private static final int SECOND_SUN_ANGLE = 30;
     private static final int MOON_ANGLE = 195;
-    private static final int TARGET_FRAMERATE = 60;
     private static final float MOON_SIZE_RATIO = 1.5f;
+    private static int chunkSize;
     private GameObjectCollection gameObjects;
     private ImageReader imageReader;
     private UserInputListener inputListener;
@@ -145,9 +145,9 @@ public class PepseGameManager extends GameManager{
         }
     }
     private void createAvatar() {
-        float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        float middle_x = windowDimensions.x()* MIDDLE;
         Vector2 avatarInitialPosition = new Vector2(
-                middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
+                middle_x, terrain.groundHeightAt(middle_x)-AVATAR_PLACEMENT_BUFFER);
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
         gameObjects.addGameObject(avatar);
         avatar.setTag(AVATAR_TAG);
@@ -182,7 +182,7 @@ public class PepseGameManager extends GameManager{
         float avatarY = avatarLocation.y();
         float groundHeight = terrain.groundHeightAt(avatarX);
         if (avatarY+avatarHeight>groundHeight+BLOCK_SIZE*MIDDLE) {
-            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight- RESET_BUFFER));
+            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight-AVATAR_RESET_BUFFER));
         }
         checkDelayer=0;
     }
