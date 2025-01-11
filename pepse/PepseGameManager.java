@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  */
 public class PepseGameManager extends GameManager{
     private static final double MIDDLE = 0.5f;
-    private static final int PLACEMENT_BUFFER = 4 * BLOCK_SIZE;
+    private static final int PLACEMENT_BUFFER = 20 * BLOCK_SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
