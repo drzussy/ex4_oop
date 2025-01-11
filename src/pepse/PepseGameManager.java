@@ -34,9 +34,11 @@ public class PepseGameManager extends GameManager{
     private static final int TARGET_FRAMERATE = 30;
     private GameObjectCollection gameObjects;
     private ImageReader imageReader;
+    private UserInputListener inputListener;
     private Avatar avatar;
     private Terrain terrain;
     private Flora flora;
+    private Cloud cloud;
     private Vector2 windowDimensions;
     private int minLoadedX;
     private int maxLoadedX;
@@ -61,44 +63,36 @@ public class PepseGameManager extends GameManager{
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
         this.gameObjects = gameObjects();
         this.imageReader = imageReader;
+        this.inputListener = inputListener;
         windowController.setTargetFramerate(TARGET_FRAMERATE);
         windowDimensions = windowController.getWindowDimensions();
         float windowWidth = windowDimensions.x();
         minLoadedX = -CHUNK_SIZE;
         maxLoadedX = (int) (CHUNK_SIZE + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
-        // Collision optimization
-        optimizeLayerCollisions();
-        // Create background objects - sky, sun & halo, nighttime
-        createBackgroundObjects();
+        optimizeLayerCollisions(); // Collision optimization
+        createBackgroundObjects(); // Create background objects - sky, sun & halo, nighttime
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
         flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage);
         loadWorld(minLoadedX, maxLoadedX);
-        // avatar initialization
+        createAvatar(); // avatar initialization
+        // Set the camera to follow the game avatar
+        Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
+        setCamera(new Camera(avatar, cameraPosition,
+                windowController.getWindowDimensions(), windowController.getWindowDimensions()));
+    }
+
+    private void createAvatar() {
         float middle_x = (float) (windowDimensions.x()* MIDDLE);
         Vector2 avatarInitialPosition = new Vector2(
                 middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
         gameObjects.addGameObject(avatar);
         avatar.setTag(AVATAR_TAG);
-        // cloud creation
-        Cloud cloud = new Cloud(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
-                CLOUD_DIMENSIONS, windowDimensions,
-                gameObjects::addGameObject, gameObjects::removeGameObject, imageReader::readImage);
-        List<Block> cloudList = cloud.create();
-        if (cloudList!=null) {
-            for (GameObject cloudBlock : cloudList) {
-                gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
-            }
-        }
         avatar.addJumpObserver(cloud);
         // Create energy display
         Supplier<Double> callback = avatar::getEnergy;
         gameObjects.addGameObject(new EnergyDisplay(Vector2.ZERO ,DISPLAY_DIMENSIONS, callback), Layer.UI);
-        // Set the camera to follow the game avatar
-        Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
-        setCamera(new Camera(avatar, cameraPosition,
-                windowController.getWindowDimensions(), windowController.getWindowDimensions()));
     }
 
     /*
@@ -128,14 +122,27 @@ public class PepseGameManager extends GameManager{
         gameObjects.addGameObject(sun, Layer.BACKGROUND);
         gameObjects.addGameObject(sunHalo, Layer.BACKGROUND);
 
-        // Second sun + moon initialization
+        // Second sun + moon initialization - please see in README (or just in game)!
         GameObject secondSun = Sun.create(windowDimensions, DAY_CYCLE_LENGTH, Color.RED, SECOND_SUN_ANGLE);
         GameObject secondSunHalo = SunHalo.create(secondSun, Color.RED);
         gameObjects.addGameObject(secondSun, Layer.BACKGROUND);
         gameObjects.addGameObject(secondSunHalo, Layer.BACKGROUND);
         GameObject moon = Sun.create(windowDimensions, DAY_CYCLE_LENGTH, Color.WHITE, MOON_ANGLE);
         moon.renderer().setRenderable(imageReader.readImage(PATH_TO_MOON_IMAGE, true));
+        GameObject moonHalo = SunHalo.create(moon, Color.GREEN);
+        gameObjects.addGameObject(moonHalo, Layer.BACKGROUND);
         gameObjects.addGameObject(moon, Layer.BACKGROUND);
+
+        // cloud creation
+        cloud = new Cloud(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
+                CLOUD_DIMENSIONS, windowDimensions,
+                gameObjects::addGameObject, gameObjects::removeGameObject, imageReader::readImage);
+        List<Block> cloudList = cloud.create();
+        if (cloudList!=null) {
+            for (GameObject cloudBlock : cloudList) {
+                gameObjects.addGameObject(cloudBlock, Layer.BACKGROUND);
+            }
+        }
     }
 
     /**
