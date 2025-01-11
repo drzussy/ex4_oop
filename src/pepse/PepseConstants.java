@@ -50,7 +50,7 @@ public class PepseConstants {
     /**
      * Gravity constant: defines how quickly objects fall. Currently affects only the avatar and raindrops.
      */
-    public static final float GRAVITY = 600;
+    public static final float GRAVITY = BLOCK_SIZE*20;
     /**
      * Time constant: The length of a full single day/night cycle.
      * Used by the Night, Sun, and SunHalo Gameobjects.
