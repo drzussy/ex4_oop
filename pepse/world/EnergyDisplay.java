@@ -38,7 +38,6 @@ public class EnergyDisplay extends GameObject {
         super.update(deltaTime);
         this.renderer().setRenderable(new TextRenderable(
                 Integer.toString((int) Math.floor(callback.get()))));
-
     }
 }
 

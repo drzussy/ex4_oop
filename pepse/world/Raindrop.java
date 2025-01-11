@@ -14,7 +14,6 @@ import static pepse.util.PepseConstants.*;
  * Falls down while becoming more transparent, deleting itself when fully transparent.
  */
 public class Raindrop extends GameObject {
-
     private static final float RAINDROP_GRAVITY = 2*GRAVITY;
     private static final Vector2 DIMENSIONS = new Vector2(20, 30);
     private static final float TEARDROP_FALL_TIME = 2f;
