@@ -181,7 +181,7 @@ public class PepseGameManager extends GameManager{
         float avatarY = avatarLocation.y();
         float groundHeight = terrain.groundHeightAt(avatarX);
         if (avatarY+avatarHeight>groundHeight+BLOCK_SIZE*MIDDLE) {
-            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight));
+            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight-BLOCK_SIZE));
         }
         checkDelayer=0;
     }
