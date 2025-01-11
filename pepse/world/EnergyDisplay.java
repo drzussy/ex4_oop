@@ -36,8 +36,7 @@ public class EnergyDisplay extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        this.renderer().setRenderable(new TextRenderable(
-                Integer.toString((int) Math.floor(callback.get()))));
+        this.renderer().setRenderable(new TextRenderable((int) Math.floor(callback.get()) + "%"));
     }
 }
 
