@@ -9,7 +9,11 @@ import pepse.world.Avatar;
 
 import static pepse.PepseConstants.*;
 
-
+/**
+ * The Fruit class represents a fruit object in the game that can be interacted with by the Avatar.
+ * It is designed to be collected by the Avatar, providing an energy bonus, and then respawns after a delay.
+ * The fruit can also be collidable with certain objects, such as the Avatar and trees.
+ */
 public class Fruit extends GameObject {
     private static final Vector2 FRUIT_SIZE = new Vector2(BLOCK_SIZE*0.75f, BLOCK_SIZE*1.25f);
     private static final int FRUIT_ENERGY_BONUS = 20;
@@ -17,6 +21,12 @@ public class Fruit extends GameObject {
     private boolean collidable = true;
     Renderable fruitImage;
 
+    /**
+     * Constructs a new Fruit object at the specified position with the provided renderable image.
+     *
+     * @param topLeftCorner The top-left corner position where the fruit will be placed.
+     * @param renderable    The renderable image representing the fruit's visual appearance.
+     */
     public Fruit(Vector2 topLeftCorner, Renderable renderable) {
         super(topLeftCorner, FRUIT_SIZE ,renderable);
         this.setTag(FRUIT_TAG);

@@ -16,6 +16,11 @@ import java.util.function.Function;
 
 import static pepse.PepseConstants.*;
 
+/**
+ * A utility class for generating trees, leaves, and associated game objects within a given range.
+ * The generated flora elements are consistently seeded to ensure reproducible results across executions.
+ */
+
 public class Flora {
     private static final String PATH_TO_FRUIT_IMAGE = "assets/pineapple.png";
     private static final int MIN_TREE_HEIGHT = 5;
@@ -42,6 +47,13 @@ public class Flora {
     private final int seed;
     private final Renderable fruitImage;
 
+    /**
+     * Constructs a Flora generator with a specific seed and ground height function.
+     *
+     * @param seed            the seed used for consistent randomization.
+     * @param getGroundHeightAt a function mapping an x-coordinate to the ground height at that position.
+     * @param readImage       a function to read and create a {@link Renderable} from an image path.
+     */
     public Flora(int seed, Function<Float, Float> getGroundHeightAt,
                  BiFunction<String, Boolean, Renderable> readImage) {
         this.seed = seed;
@@ -49,7 +61,13 @@ public class Flora {
         this.fruitImage = readImage.apply(PATH_TO_FRUIT_IMAGE, true);
     }
 
-
+    /**
+     * Creates trees and their associated leaves and fruits within the given x-coordinate range.
+     *
+     * @param minX the minimum x-coordinate of the range.
+     * @param maxX the maximum x-coordinate of the range.
+     * @return a mapping of {@link Tree} objects to their associated game objects (leaves and fruits).
+     */
     public Map<Tree, List<GameObject>> createInRange(int minX, int maxX){
         Map<Tree, List<GameObject>> map = new HashMap<>();
         minX = ((minX + BLOCK_SIZE - 1) / BLOCK_SIZE) * BLOCK_SIZE;

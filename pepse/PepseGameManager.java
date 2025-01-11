@@ -46,6 +46,11 @@ public class PepseGameManager extends GameManager{
     private static int checkDelayer = 0;
     private static final int DELAY_TIMER = 30;
 
+    /**
+     * Main entry point for the game, where the PepseGameManager is initialized and run.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args){
         new PepseGameManager().run();
     }
