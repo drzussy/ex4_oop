@@ -27,6 +27,7 @@ public class PepseGameManager extends GameManager{
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     public static final float CHUNK_RATIO = 0.6f;
+    public static final float RESET_BUFFER = 0.2f * BLOCK_SIZE;
     private static int chunkSize;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
@@ -181,7 +182,7 @@ public class PepseGameManager extends GameManager{
         float avatarY = avatarLocation.y();
         float groundHeight = terrain.groundHeightAt(avatarX);
         if (avatarY+avatarHeight>groundHeight+BLOCK_SIZE*MIDDLE) {
-            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight-BLOCK_SIZE));
+            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight- RESET_BUFFER));
         }
         checkDelayer=0;
     }
