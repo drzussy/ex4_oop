@@ -25,6 +25,8 @@ public class Cloud implements JumpObserver{
     private static final float CLOUD_BLOCK_CHANCE = 0.6f;
     private static final float CLOUD_CYCLE_TIME = 15;
     private static final float CLOUD_BUFFER = 0.1F;
+    private static final float LEFT_CLOUD_BUFFER = -2*CLOUD_BUFFER;
+    private static final float RIGHT_CLOUD_BUFFER = 1+CLOUD_BUFFER;
     private static final float RAINDROP_CHANCES = 0.2F;
     private final Vector2 topLeftCorner;
     private final Vector2 dimensions;
@@ -85,8 +87,8 @@ public class Cloud implements JumpObserver{
                     Block cloud = new Block(cloudTopLeft,cloudRenderable);
                     cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
                     new Transition<>(cloud, (Float x)->cloud.transform().setTopLeftCornerX(x),
-                            windowDimensions.x()*(-2*CLOUD_BUFFER)+rightShift,
-                            windowDimensions.x()*(1+CLOUD_BUFFER)+rightShift,
+                            windowDimensions.x()*(LEFT_CLOUD_BUFFER)+rightShift,
+                            windowDimensions.x()*(RIGHT_CLOUD_BUFFER)+rightShift,
                             Transition.LINEAR_INTERPOLATOR_FLOAT, CLOUD_CYCLE_TIME,
                             Transition.TransitionType.TRANSITION_LOOP,
                             null);
