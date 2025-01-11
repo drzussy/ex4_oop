@@ -11,6 +11,7 @@ Then, Flora.create(minX, maxX) randomly (but consistently) creates trees in the 
 is a key, and its value is an ArrayList of all of its leaves and fruit. This HashMap is then returned,
 allowing easy iteration over all trees (the key set) and the objects for each tree.
 Note: we chose to ADD to the API of Sun and SunHalo for design reasons - we wanted the ability to create
-more orbiting objects (as you can see in the game), with different angles and colors. We also implemented the
-required API, and we ask you to not take off points for these additions, which we think made the game more
-fun. Thank you!
+more orbiting objects (as you can see in the game), with different angles and colors; We ALSO implemented the
+specified API. Additionally, we chose to have the avatar appear BEHIND the leaves and not in front of them,
+for aesthetic reasons. We ask you to not take off points for these additions, which we think made the game
+more fun. Thank you!
