@@ -4,7 +4,7 @@ import danogl.GameObject;
 import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import static src.pepse.util.PepseConstants.TREE_TAG;
+import static src.pepse.PepseConstants.TREE_TAG;
 
 /**
  * A class representing a tree in-game.

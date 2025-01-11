@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static src.pepse.util.PepseConstants.BLOCK_SIZE;
+import static src.pepse.PepseConstants.BLOCK_SIZE;
 
 /**
  * A class for creating terrain, in the form of Block objects (which extend GameObject) at differing,

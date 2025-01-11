@@ -1,4 +1,4 @@
-package src.pepse.util;
+package src.pepse;
 
 public class PepseConstants {
     /**

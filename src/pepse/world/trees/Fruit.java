@@ -7,7 +7,7 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import src.pepse.world.Avatar;
 
-import static src.pepse.util.PepseConstants.*;
+import static src.pepse.PepseConstants.*;
 
 
 public class Fruit extends GameObject {

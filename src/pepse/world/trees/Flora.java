@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static src.pepse.util.PepseConstants.*;
+import static src.pepse.PepseConstants.*;
 
 public class Flora {
     private static final String PATH_TO_FRUIT_IMAGE = "assets/pineapple.png";
