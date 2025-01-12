@@ -40,6 +40,7 @@ public class Terrain {
      * @return The height of the ground surface at the passed coordinate.
      */
     public float groundHeightAt(float x) {
+        x = x - (x % BLOCK_SIZE);
         float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE * NOISE_FACTOR);
         float rawHeight = groundHeightAtX0 + noise;
         return (float) (Math.floor(rawHeight/ BLOCK_SIZE) * BLOCK_SIZE);
