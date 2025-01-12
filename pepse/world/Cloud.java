@@ -28,8 +28,10 @@ public class Cloud implements JumpObserver{
     private static final float LEFT_CLOUD_BUFFER = -2*CLOUD_BUFFER;
     private static final float RIGHT_CLOUD_BUFFER = 1+CLOUD_BUFFER;
     private static final float RAINDROP_CHANCES = 0.2F;
+    private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
+    private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private final Vector2 topLeftCorner;
-    private final Vector2 dimensions;
+//    private final Vector2 dimensions;
     private final Vector2 windowDimensions;
     private final BiFunction<String, Boolean, Renderable> imageReader;
     private final BiConsumer<GameObject, Integer> gameObjectsAdd;
@@ -40,24 +42,20 @@ public class Cloud implements JumpObserver{
     /**
      * Construct a new cloud.
      *
-     * @param topLeftCorner Position of the cloud in pixels. Note: Cloud will move with the camera.
-     * @param dimensions    Width and height in window coordinates.
-     * @param windowDimensions The game window dimensions,
-     *                         used for resetting the cloud when it goes out-of-bounds.
+     * @param windowDimensions  The game window dimensions,
+     *                          used for resetting the cloud when it goes out-of-bounds.
      * @param gameObjectsAdd    A callback to the method used for adding GameObjects to the game.
      *                          Used to create raindrops.
      * @param gameObjectsRemove A callback to the method used for removing GameObjects from the game.
      *                          Passed to the created raindrops to enable their self-destruct.
      * @param readImage         A callback to the method used to create ImageRenderables from files.
      */
-    public Cloud(Vector2 topLeftCorner,
-                 Vector2 dimensions,
-                 Vector2 windowDimensions,
+    public Cloud(Vector2 windowDimensions,
                  BiConsumer<GameObject, Integer> gameObjectsAdd,
                  BiConsumer<GameObject, Integer> gameObjectsRemove,
                  BiFunction<String, Boolean, Renderable > readImage){
-        this.topLeftCorner = topLeftCorner;
-        this.dimensions = dimensions;
+        this.topLeftCorner = new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION);
+//        this.dimensions = CLOUD_DIMENSIONS;
         this.windowDimensions = windowDimensions;
         this.gameObjectsAdd = gameObjectsAdd;
         this.gameObjectsRemove = gameObjectsRemove;
@@ -72,10 +70,10 @@ public class Cloud implements JumpObserver{
      * @return A list of blocks which constitute the cloud.
      */
     public List<Block> create () {
-        int cloudWidth = (int) (dimensions.x()/BLOCK_SIZE);
-        int cloudHeight = (int) (dimensions.y()/BLOCK_SIZE);
+        int cloudWidth = (int) (CLOUD_DIMENSIONS.x()/BLOCK_SIZE);
+        int cloudHeight = (int) (CLOUD_DIMENSIONS.y()/BLOCK_SIZE);
         List<Block> cloudList = new ArrayList<>();
-        List<List<Boolean>> cloudShape = generateCloud(cloudWidth, cloudHeight);
+        List<List<Boolean>> cloudShape = generateCloudShape(cloudWidth, cloudHeight);
         if (cloudShape==null) return null;
         Renderable cloudRenderable =  imageReader.apply(PATH_TO_CLOUD_BLOCK_IMAGE, true);
         for (int row = 0; row<cloudHeight; row++) {
@@ -100,7 +98,7 @@ public class Cloud implements JumpObserver{
         return cloudList;
     }
 
-    private static List<List<Boolean>> generateCloud (int width, int height) {
+    private static List<List<Boolean>> generateCloudShape(int width, int height) {
         if (width<=0 || height<=0) return null;
         Random random = new Random();
         List<List<Boolean>> cloudSpotsToFill = new ArrayList<>();
