@@ -21,13 +21,6 @@ public class SunHalo {
      * @return The halo for the passed sun.
      */
     public static GameObject create(GameObject sun){
-        // TODO: delete the following code
-//        GameObject sunHalo = new GameObject(sun.getTopLeftCorner(), sun.getDimensions().add(HALO_BUFFER),
-//                new OvalRenderable(HALO_COLOR));
-//        sunHalo.addComponent((float deltaTime)->sunHalo.setCenter(sun.getCenter()));
-//        sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-//        sunHalo.setTag(SUN_HALO_TAG);
-//        return sunHalo;
         return create(sun, HALO_COLOR);
     }
     /**
