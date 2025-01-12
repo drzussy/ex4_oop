@@ -76,7 +76,7 @@ public class PepseGameManager extends GameManager{
         chunkSize = (int) (windowWidth* CHUNK_RATIO /BLOCK_SIZE)*BLOCK_SIZE;
         minLoadedX = -chunkSize;
         maxLoadedX = (int) (chunkSize + (windowWidth/BLOCK_SIZE)*BLOCK_SIZE);
-        optimizeLayerCollisions(); // Collision optimization
+        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
         createBackgroundObjects(); // Create background objects - sky, sun & halo, nighttime
         //terrain initialization
         terrain = new Terrain(windowDimensions, new Random().nextInt());
@@ -87,21 +87,6 @@ public class PepseGameManager extends GameManager{
         Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
         setCamera(new Camera(avatar, cameraPosition,
                 windowController.getWindowDimensions(), windowController.getWindowDimensions()));
-    }
-
-
-    /*
-        Helper method to nullify specific layer collisions,
-        so fewer collisions are computed and the game runs faster.
-     */
-    private void optimizeLayerCollisions() {
-        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, FRUIT_LAYER, true);
-        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, FRUIT_LAYER, true);
-        gameObjects.layers().shouldLayersCollide(Layer.DEFAULT, LEAF_AND_RAIN_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, LEAF_AND_RAIN_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(Layer.STATIC_OBJECTS, Layer.STATIC_OBJECTS, false);
-        gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, LEAF_AND_RAIN_LAYER, false);
-        gameObjects.layers().shouldLayersCollide(LEAF_AND_RAIN_LAYER, FRUIT_LAYER, false);
     }
 
     private void createBackgroundObjects() {
