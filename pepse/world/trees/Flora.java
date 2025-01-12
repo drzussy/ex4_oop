@@ -89,8 +89,8 @@ public class Flora {
         float treeHeight = treeHeightAtInBlocks(x) * BLOCK_SIZE;
         Vector2 treeTopLeftCorner = new Vector2(x, getGroundHeightAt.apply(x) - treeHeight);
         Vector2 tree_dimensions = new Vector2(BLOCK_SIZE, treeHeight);
-        Renderable treeRender = new RectangleRenderable(
-                seededApproximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
+        Renderable treeRender = new RectangleRenderable(seededApproximateColor(
+                TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
         return new Tree (treeTopLeftCorner, tree_dimensions, treeRender);
     }
 
