@@ -6,12 +6,20 @@ a seed (for consistent generation), an ImageReader instance (because we used cus
 callback to the Terrain method for determining the height of the ground at a specific point (so that trees
 won't be partially underground or hover in the air).
 Then, Flora.create(minX, maxX) randomly (but consistently) creates trees in the range [minX, maxX], which are
- all instances of Tree. For each generated Tree, Flora then randomly creates leaf Blocks and Fruits around it
- in a rectangle of random (bounded) size. Finally, Flora packs all this flora in a HashMap, where each tree 
+all instances of Tree. For each generated Tree, Flora then randomly creates leaf Blocks and Fruits around it
+in a rectangle of random (bounded) size. Finally, Flora packs all this flora in a HashMap, where each tree
 is a key, and its value is an ArrayList of all of its leaves and fruit. This HashMap is then returned,
 allowing easy iteration over all trees (the key set) and the objects for each tree.
-Note: we chose to ADD to the API of Sun and SunHalo for design reasons - we wanted the ability to create
-more orbiting objects (as you can see in the game), with different angles and colors; We ALSO implemented the
-specified API. Additionally, we chose to have the avatar appear BEHIND the leaves and not in front of them,
-for aesthetic reasons. We ask you to not take off points for these additions, which we think made the game
-more fun. Thank you!
+We implemented Cloud similarly to Terrain/Flora/Sky/Sun/Night, with a create() method that returns the list
+of GameObjects (Blocks) to be added to the game. However, Cloud IS instantiated, and create() is NOT static.
+Cloud retains the list of cloud blocks it has made, so that it can use them to generate raindrops when
+notified about the avatar jumping (implementing the JumpObserver interface that we added). To this end, each
+Cloud only creates ONE cloud - repeated calls to create() with the same Cloud will return the same generated
+cloud of blocks. In instantiation, we also passed Cloud callbacks to add and remove game objects, so that it
+will be able to add Raindrops (which extend GameObject), and schedule their removal after fading out fully.
+Note: We made the following changes for design reasons: we ADDED to the API of Sun and SunHalo - we wanted
+the ability to create more orbiting objects (as you can see in the game), with different angles and colors;
+We ALSO implemented the specified API. Additionally, we chose to have the avatar appear BEHIND the leaves and
+not in front of them, for aesthetic reasons. Finally, we created our own private copy of approximateColor,
+which receives a pre-seeded Random object (instead of using the same randomly-seeded one), in Flora - so that
+trees will be consistently colored even after disappearing and re-appearing.
