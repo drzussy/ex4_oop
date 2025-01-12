@@ -36,13 +36,14 @@ public class Flora {
     private static final Color LEAF_COLOR = new Color(21, 84, 12);
     private static final int LEAF_COLOR_DELTA = 50;
     private static final float LEAF_CHANCE = 0.6F;
-    private static final float LEAF_MAX_ANGLE = 45F;
-    private static final float LEAF_CYCLE_LENGTH = 2F;
+    private static final float LEAF_MAX_ANGLE = 30F;
+    private static final float LEAF_CYCLE_LENGTH = 4F;
     private static final float LEAF_WIND_WIDTH_FACTOR = 0.75f;
     private static final float LEAF_WIND_HEIGHT_FACTOR = 0.95f;
     private static final float FRUIT_CHANCE = 0.05f;
     private static final float TREE_CHANCE = 0.1f;
     private static final int MAX_RGB_VAL = 255;
+    private static final float MAX_LEAF_DELAY = 3;
     private final Function<Float, Float> getGroundHeightAt;
     private final int seed;
     private final Renderable fruitImage;
@@ -116,27 +117,19 @@ public class Flora {
                             col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
                     Block leaf = new Block(leafTopLeft, leafRender);
                     leaf.setTag(LEAF_TAG);
-                    Runnable createLeafTransitions = () -> {
-                        new Transition<>(leaf,
-                                leaf.renderer()::setRenderableAngle,
-                                0f,
-                                LEAF_MAX_ANGLE,
-                                Transition.LINEAR_INTERPOLATOR_FLOAT,
-                                LEAF_CYCLE_LENGTH,
-                                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                                null);
-                        new Transition<>(leaf,
-                                leaf::setDimensions,
-                                new Vector2(BLOCK_SIZE, BLOCK_SIZE),
-                                new Vector2(BLOCK_SIZE*LEAF_WIND_WIDTH_FACTOR,
-                                                BLOCK_SIZE*LEAF_WIND_HEIGHT_FACTOR),
-                                Transition.LINEAR_INTERPOLATOR_VECTOR,
-                                LEAF_CYCLE_LENGTH,
-                                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                                null);
-                    };
-                    float delayTime = random.nextFloat()*2;
-                    new ScheduledTask(leaf, delayTime, false, createLeafTransitions);
+                    Runnable createAngleTransitions = () -> new Transition<>(leaf,
+                            leaf.renderer()::setRenderableAngle,
+                            -LEAF_MAX_ANGLE, LEAF_MAX_ANGLE,
+                            Transition.CUBIC_INTERPOLATOR_FLOAT, LEAF_CYCLE_LENGTH,
+                            Transition.TransitionType.TRANSITION_BACK_AND_FORTH, null);
+                    Runnable createSizeTransitions = () -> new Transition<>(leaf, leaf::setDimensions,
+                            new Vector2(BLOCK_SIZE, BLOCK_SIZE),
+                            new Vector2(BLOCK_SIZE*LEAF_WIND_WIDTH_FACTOR,
+                                    BLOCK_SIZE*LEAF_WIND_HEIGHT_FACTOR),
+                            Transition.LINEAR_INTERPOLATOR_VECTOR, LEAF_CYCLE_LENGTH,
+                            Transition.TransitionType.TRANSITION_BACK_AND_FORTH, null);
+                    new ScheduledTask(leaf, random.nextFloat()*MAX_LEAF_DELAY, false, createAngleTransitions);
+                    new ScheduledTask(leaf, random.nextFloat()*MAX_LEAF_DELAY, false, createSizeTransitions);
                     foliageList.add(leaf);
                 }
                 if (random.nextFloat() < FRUIT_CHANCE) { // Create a fruit
