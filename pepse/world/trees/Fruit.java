@@ -55,10 +55,7 @@ public class Fruit extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if (!other.getTag().equals(AVATAR_TAG)) {
-            if (other.getTag().equals(TREE_TAG)) despawnFruit();
-            return;
-        }
+        if (!other.getTag().equals(AVATAR_TAG)) return;
         Avatar avatar = (Avatar) other;
         avatar.changeEnergy(FRUIT_ENERGY_BONUS);
         despawnFruit();

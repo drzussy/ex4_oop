@@ -90,7 +90,7 @@ public class Flora {
         Vector2 treeTopLeftCorner = new Vector2(x, getGroundHeightAt.apply(x) - treeHeight);
         Vector2 tree_dimensions = new Vector2(BLOCK_SIZE, treeHeight);
         Renderable treeRender = new RectangleRenderable(
-                approximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
+                seededApproximateColor(TREE_TRUNK_COLOR, TREE_COLOR_DELTA, new Random((Objects.hash(x, seed)))));
         return new Tree (treeTopLeftCorner, tree_dimensions, treeRender);
     }
 
@@ -106,15 +106,15 @@ public class Flora {
         int canopyHeight = random.nextInt(MIN_CANOPY_HEIGHT, MAX_CANOPY_HEIGHT+1);
         canopyHeight = Math.min(canopyHeight, (int) (CANOPY_TO_TREE_HEIGHT_RATIO*treeHeight/BLOCK_SIZE));
         int canopyWidth = random.nextInt(MIN_CANOPY_WIDTH, MAX_CANOPY_WIDTH+1);
-        float rightShift = canopyWidth*HALF*BLOCK_SIZE;
-        float downShift = canopyHeight*HALF*BLOCK_SIZE;
+        int rightShift = (int) (canopyWidth*HALF);
+        int downShift = (int) (canopyHeight*HALF);
         Renderable leafRender = new RectangleRenderable(
-                approximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
+                seededApproximateColor(LEAF_COLOR, LEAF_COLOR_DELTA, random));
         for (int row = 0; row< canopyHeight; row++) {
             for (int col = 0; col< canopyWidth; col++) {
                 if (random.nextFloat()<LEAF_CHANCE) {
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
-                            col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
+                            (col-rightShift)*BLOCK_SIZE, (row-downShift)*BLOCK_SIZE));
                     Block leaf = new Block(leafTopLeft, leafRender);
                     leaf.setTag(LEAF_TAG);
                     Runnable createAngleTransitions = () -> new Transition<>(leaf,
@@ -132,9 +132,9 @@ public class Flora {
                     new ScheduledTask(leaf, random.nextFloat()*MAX_LEAF_DELAY, false, createSizeTransitions);
                     foliageList.add(leaf);
                 }
-                if (random.nextFloat() < FRUIT_CHANCE) { // Create a fruit
+                if (random.nextFloat() < FRUIT_CHANCE && col!= rightShift) { // Create a fruit
                     Vector2 leafTopLeft = treeTopLeftCorner.add(new Vector2(
-                            col*BLOCK_SIZE- rightShift, row*BLOCK_SIZE- downShift));
+                            (col-rightShift)*BLOCK_SIZE, (row-downShift)*BLOCK_SIZE));
                     Fruit fruit = new Fruit(leafTopLeft, fruitImage);
                     fruit.setTag(FRUIT_TAG);
                     foliageList.add(fruit);
@@ -149,16 +149,16 @@ public class Flora {
         and have the trees be consistently re-generated,
         even with regard to color (and not just position and height) .
      */
-    private Color approximateColor(Color baseColor, int colorDelta, Random random) {
+    private Color seededApproximateColor(Color baseColor, int colorDelta, Random random) {
         return new Color(
-                randomChannelInRange(baseColor.getRed()-colorDelta, baseColor.getRed()+colorDelta,
-                        random),
-                randomChannelInRange(baseColor.getGreen()-colorDelta, baseColor.getGreen()+colorDelta,
-                        random),
-                randomChannelInRange(baseColor.getBlue()-colorDelta, baseColor.getBlue()+colorDelta,
-                        random));
+                seededRandomChannelInRange(baseColor.getRed()-colorDelta,
+                        baseColor.getRed()+colorDelta, random),
+                seededRandomChannelInRange(baseColor.getGreen()-colorDelta,
+                        baseColor.getGreen()+colorDelta, random),
+                seededRandomChannelInRange(baseColor.getBlue()-colorDelta,
+                        baseColor.getBlue()+colorDelta, random));
     }
-    private static int randomChannelInRange(int min, int max, Random random) {
+    private static int seededRandomChannelInRange(int min, int max, Random random) {
         int channel = random.nextInt(max-min+1) + min;
         return Math.min(MAX_RGB_VAL, Math.max(channel, 0));
     }
