@@ -11,8 +11,9 @@ import danogl.GameObject;
 import danogl.collisions.Layer;
 import danogl.gui.*;
 import danogl.util.Vector2;
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Random;
+import java.util.Map;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -21,24 +22,23 @@ import java.util.function.Supplier;
  * chunks when and where needed.
  */
 public class PepseGameManager extends GameManager{
-    private static final double MIDDLE = 0.5f;
+    private static final int TARGET_FRAMERATE = 60;
+    private static final float MIDDLE = 0.5f;
+    private static final float RESET_BUFFER = 0.2f * BLOCK_SIZE;
     private static final int PLACEMENT_BUFFER = 20 * BLOCK_SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
-    private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
-    private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     private static final float CHUNK_RATIO = 0.6f;
-    private static final float RESET_BUFFER = 0.2f * BLOCK_SIZE;
     private static int chunkSize;
     private static final Vector2 DISPLAY_DIMENSIONS = Vector2.ONES.mult(50);
     private static final String PATH_TO_MOON_IMAGE = "assets/moon.png";
     private static final int SECOND_SUN_ANGLE = 30;
     private static final int MOON_ANGLE = 195;
-    private static final int TARGET_FRAMERATE = 60;
     private static final float MOON_SIZE_RATIO = 1.5f;
     private GameObjectCollection gameObjects;
     private ImageReader imageReader;
     private UserInputListener inputListener;
     private Avatar avatar;
+    private float avatarHeight;
     private Terrain terrain;
     private Flora flora;
     private Cloud cloud;
@@ -46,7 +46,7 @@ public class PepseGameManager extends GameManager{
     private int minLoadedX;
     private int maxLoadedX;
     private static int checkDelayer = 0;
-    private static final int DELAY_TIMER = 30;
+    private static final int DELAY_TIMER = TARGET_FRAMERATE;
 
     /**
      * Main entry point for the game, where the PepseGameManager is initialized and run.
@@ -87,6 +87,7 @@ public class PepseGameManager extends GameManager{
         flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage);
         loadWorld(minLoadedX, maxLoadedX);
         createAvatar(); // avatar initialization
+        avatarHeight = avatar.getDimensions().y();
         // Set the camera to follow the game avatar
         Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
         setCamera(new Camera(avatar, cameraPosition,
@@ -134,8 +135,8 @@ public class PepseGameManager extends GameManager{
         gameObjects.addGameObject(moon, Layer.BACKGROUND);
 
         // cloud creation
-        cloud = new Cloud(new Vector2(0, windowDimensions.y()*CLOUD_HEIGHT_FRACTION),
-                CLOUD_DIMENSIONS, windowDimensions,
+        cloud = new Cloud(
+                windowDimensions,
                 gameObjects::addGameObject, gameObjects::removeGameObject, imageReader::readImage);
         List<Block> cloudList = cloud.create();
         if (cloudList!=null) {
@@ -145,7 +146,7 @@ public class PepseGameManager extends GameManager{
         }
     }
     private void createAvatar() {
-        float middle_x = (float) (windowDimensions.x()* MIDDLE);
+        float middle_x = windowDimensions.x()* MIDDLE;
         Vector2 avatarInitialPosition = new Vector2(
                 middle_x, terrain.groundHeightAt(middle_x)- PLACEMENT_BUFFER);
         avatar = new Avatar(avatarInitialPosition, inputListener, imageReader);
@@ -169,20 +170,19 @@ public class PepseGameManager extends GameManager{
         super.update(deltaTime);
         reloadInfiniteWorld();
         removeGameObjectsOutOfBounds();
-        // We don't check this every update, because it's an "expensive" check
-        if (checkDelayer==DELAY_TIMER) fixAvatarUnderground();
-        else checkDelayer++;
+        // We don't check this every update, because it's an expensive check
+//        if (checkDelayer==DELAY_TIMER) fixAvatarUnderground();
+//        else checkDelayer++;
     }
 
     // Helper method to ensure the avatar doesn't get stuck inside blocks after falling with too much speed.
     private void fixAvatarUnderground() {
-        float avatarHeight = avatar.getDimensions().y();
-        Vector2 avatarLocation = avatar.getTopLeftCorner();
+        Vector2 avatarLocation = avatar.getCenter();
         float avatarX = avatarLocation.x();
         float avatarY = avatarLocation.y();
         float groundHeight = terrain.groundHeightAt(avatarX);
-        if (avatarY+avatarHeight>groundHeight+BLOCK_SIZE*MIDDLE) {
-            avatar.setTopLeftCorner(new Vector2(avatarX,groundHeight-avatarHeight- RESET_BUFFER));
+        if (avatarY+avatarHeight*MIDDLE>groundHeight+BLOCK_SIZE) {
+            avatar.setCenter(new Vector2(avatarX,groundHeight-avatarHeight*MIDDLE-RESET_BUFFER));
         }
         checkDelayer=0;
     }
