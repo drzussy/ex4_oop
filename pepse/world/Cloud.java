@@ -71,7 +71,7 @@ public class Cloud implements JumpObserver{
      * @return A list of blocks which constitute the cloud.
      */
     public List<Block> create () {
-        if (!cloudList.isEmpty()) return cloudList; // to prevent multiple creations with the same cloud
+        if (cloudList!=null) return cloudList; // to prevent multiple creations with the same cloud
         int cloudWidth = (int) (CLOUD_DIMENSIONS.x()/BLOCK_SIZE);
         int cloudHeight = (int) (CLOUD_DIMENSIONS.y()/BLOCK_SIZE);
         List<Block> cloudList = new ArrayList<>();
