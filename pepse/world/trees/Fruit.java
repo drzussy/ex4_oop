@@ -19,7 +19,7 @@ public class Fruit extends GameObject {
     private static final int FRUIT_ENERGY_BONUS = 20;
     private static final float FRUIT_RESPAWN_DELAY = DAY_CYCLE_LENGTH;
     private boolean collidable = true;
-    Renderable fruitImage;
+    private final Renderable fruitImage;
 
     /**
      * Constructs a new Fruit object at the specified position with the provided renderable image.
