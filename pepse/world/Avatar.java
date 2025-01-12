@@ -110,7 +110,10 @@ public class Avatar extends GameObject {
         super.onCollisionEnter(other, collision);
         if(other.getTag().equals(BLOCK_TAG)){
             this.transform().setVelocityY(0);
-            this.transform().setVelocityX(0);
+            if (other.getTopLeftCorner().y()<this.getTopLeftCorner().y()) {
+                this.setTopLeftCorner(new Vector2(
+                        this.getTopLeftCorner().x(), other.getTopLeftCorner().y()-this.getDimensions().y()));
+            }
         }
     }
 
