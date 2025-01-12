@@ -28,6 +28,7 @@ public class Cloud implements JumpObserver{
     private static final float LEFT_CLOUD_BUFFER = -2*CLOUD_BUFFER;
     private static final float RIGHT_CLOUD_BUFFER = 1+CLOUD_BUFFER;
     private static final float RAINDROP_CHANCES = 0.2F;
+    private static final float TEARDROP_FALL_TIME = 2f;
     private static final Vector2 CLOUD_DIMENSIONS = new Vector2(300, 160);
     private static final float CLOUD_HEIGHT_FRACTION = 0.1F;
     private final Vector2 topLeftCorner;
@@ -70,6 +71,7 @@ public class Cloud implements JumpObserver{
      * @return A list of blocks which constitute the cloud.
      */
     public List<Block> create () {
+        if (!cloudList.isEmpty()) return cloudList; // to prevent multiple creations with the same cloud
         int cloudWidth = (int) (CLOUD_DIMENSIONS.x()/BLOCK_SIZE);
         int cloudHeight = (int) (CLOUD_DIMENSIONS.y()/BLOCK_SIZE);
         List<Block> cloudList = new ArrayList<>();
@@ -122,11 +124,10 @@ public class Cloud implements JumpObserver{
         Random random = new Random();
         for(GameObject cloudBlock: cloudList)
             if(random.nextFloat() < RAINDROP_CHANCES){
-                Raindrop raindrop =
-                        new Raindrop(cloudBlock.getCenter(),
-                        raindropRenderable,
-                                gameObjectsRemove);
+                Raindrop raindrop = new Raindrop(cloudBlock.getCenter(), raindropRenderable);
                 gameObjectsAdd.accept(raindrop, LEAF_AND_RAIN_LAYER);
+                raindrop.renderer().fadeOut(
+                        TEARDROP_FALL_TIME, ()-> gameObjectsRemove.accept(raindrop, LEAF_AND_RAIN_LAYER));
             }
     }
 }
