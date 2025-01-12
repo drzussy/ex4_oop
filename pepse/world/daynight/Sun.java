@@ -25,26 +25,6 @@ public class Sun {
      * @return The sun GameObject, which already handles day/night rotation.
      */
     public static GameObject create(Vector2 windowDimensions, float cycleLength){
-        // TODO: delete the following code
-//        Vector2 initialSunCenter = new Vector2(windowDimensions.x()*DIMENSIONS_CENTER,
-//                windowDimensions.y()* HEIGHT_AT_ZENITH);
-//        GameObject sun = new GameObject(initialSunCenter, new Vector2(SUN_SIZE, SUN_SIZE),
-//                new OvalRenderable(Color.YELLOW));
-//        sun.setCenter(initialSunCenter);
-//        sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-//        sun.setTag(SUN_TAG);
-//
-//        Vector2 cycleCenter = new Vector2(windowDimensions.x()* DIMENSIONS_CENTER,
-//                HORIZON_RATIO * windowDimensions.y());
-//        new Transition<>(sun,
-//                (Float angle)->
-//                    sun.setCenter(initialSunCenter.subtract(cycleCenter).rotated(angle).add(cycleCenter)),
-//                0f,
-//                FULL_ROTATION_DEGREES,
-//                Transition.LINEAR_INTERPOLATOR_FLOAT,
-//                cycleLength,
-//                Transition.TransitionType.TRANSITION_LOOP,
-//                null);
         return create(windowDimensions, cycleLength, Color.YELLOW, 0);
     }
 

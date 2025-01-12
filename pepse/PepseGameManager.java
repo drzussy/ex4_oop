@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 public class PepseGameManager extends GameManager{
     private static final int TARGET_FRAMERATE = 60;
     private static final float MIDDLE = 0.5f;
-    private static final float RESET_BUFFER = 0.2f * BLOCK_SIZE;
     private static final int PLACEMENT_BUFFER = 20 * BLOCK_SIZE;
     private static final float CAMERA_HEIGHT = 0.1F;
     private static final float CHUNK_RATIO = 0.6f;
@@ -38,15 +37,12 @@ public class PepseGameManager extends GameManager{
     private ImageReader imageReader;
     private UserInputListener inputListener;
     private Avatar avatar;
-    private float avatarHeight;
     private Terrain terrain;
     private Flora flora;
     private Cloud cloud;
     private Vector2 windowDimensions;
     private int minLoadedX;
     private int maxLoadedX;
-    private static int checkDelayer = 0;
-    private static final int DELAY_TIMER = TARGET_FRAMERATE;
 
     /**
      * Main entry point for the game, where the PepseGameManager is initialized and run.
@@ -87,7 +83,6 @@ public class PepseGameManager extends GameManager{
         flora = new Flora(new Random().nextInt(), terrain::groundHeightAt, imageReader::readImage);
         loadWorld(minLoadedX, maxLoadedX);
         createAvatar(); // avatar initialization
-        avatarHeight = avatar.getDimensions().y();
         // Set the camera to follow the game avatar
         Vector2 cameraPosition = new Vector2(0, -windowDimensions.y()*CAMERA_HEIGHT);
         setCamera(new Camera(avatar, cameraPosition,
@@ -170,21 +165,6 @@ public class PepseGameManager extends GameManager{
         super.update(deltaTime);
         reloadInfiniteWorld();
         removeGameObjectsOutOfBounds();
-        // We don't check this every update, because it's an expensive check
-//        if (checkDelayer==DELAY_TIMER) fixAvatarUnderground();
-//        else checkDelayer++;
-    }
-
-    // Helper method to ensure the avatar doesn't get stuck inside blocks after falling with too much speed.
-    private void fixAvatarUnderground() {
-        Vector2 avatarLocation = avatar.getCenter();
-        float avatarX = avatarLocation.x();
-        float avatarY = avatarLocation.y();
-        float groundHeight = terrain.groundHeightAt(avatarX);
-        if (avatarY+avatarHeight*MIDDLE>groundHeight+BLOCK_SIZE) {
-            avatar.setCenter(new Vector2(avatarX,groundHeight-avatarHeight*MIDDLE-RESET_BUFFER));
-        }
-        checkDelayer=0;
     }
 
     /* Both processes are handled by maintaining the smallest (furthest to the left) and biggest
